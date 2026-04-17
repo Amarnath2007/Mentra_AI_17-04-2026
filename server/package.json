@@ -1,0 +1,24 @@
+{
+  "name": "mentra-ai-server",
+  "version": "1.0.0",
+  "description": "Mentra AI Backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "@huggingface/inference": "^4.13.15",
+    "@supabase/supabase-js": "^2.103.3",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "groq-sdk": "^1.1.2",
+    "jsonwebtoken": "^9.0.0",
+    "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
