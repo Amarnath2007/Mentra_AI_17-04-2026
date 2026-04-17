@@ -30,19 +30,20 @@ const signToken = (user) => jwt.sign(
 
 router.post('/signup', async (req, res) => {
   try {
-    const { name, email, password, role = 'student' } = req.body;
+    const { name, email, password, role = 'student', interests = [] } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'Name, email, and password are required' });
     }
 
     if (supabase) {
       try {
-        const { data: existing } = await supabase.from('users').select('id').eq('email', email).single();
+        const { data: existing, error: existErr } = await supabase.from('users').select('id').eq('email', email).maybeSingle();
         if (existing) return res.status(409).json({ error: 'Email already registered' });
+        // Optional: you can ignore existErr or just proceed
 
         const hashed = await bcrypt.hash(password, 12);
         const { data: user, error } = await supabase.from('users').insert([{
-          name, email, password: hashed, role
+          name, email, password: hashed, role, interests
         }]).select().single();
 
         if (error) throw error;

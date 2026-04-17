@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-
 const supabase = require('../supabase');
 
 let groq = null;
@@ -14,37 +13,10 @@ try {
   console.warn('Groq initialization failed:', e.message);
 }
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-
-const getMockLearningPath = (interests, skillLevel) => ({
-  title: `Personalized ${interests[0] || 'Technology'} Learning Path`,
-  description: `A curated learning journey tailored for a ${skillLevel} learner interested in ${interests.join(', ')}.`,
-  category: interests[0] || 'Technology',
-  totalEstimatedHours: 45,
-  topics: [
-    { title: 'Foundations & Core Concepts', description: 'Build a solid understanding of the fundamentals.', estimatedHours: 8, difficulty: 'beginner', order: 1, resources: [{ title: 'Official Documentation', url: '#', type: 'docs' }, { title: 'Beginner Video Course', url: '#', type: 'video' }] },
-    { title: 'Intermediate Patterns & Best Practices', description: 'Learn how professionals approach common problems.', estimatedHours: 12, difficulty: 'intermediate', order: 2, resources: [{ title: 'Advanced Tutorial Series', url: '#', type: 'video' }, { title: 'GitHub Examples', url: '#', type: 'code' }] },
-    { title: 'Building Real Projects', description: 'Apply your knowledge to hands-on projects.', estimatedHours: 15, difficulty: 'intermediate', order: 3, resources: [{ title: 'Project Ideas', url: '#', type: 'article' }] },
-    { title: 'Advanced Topics & Optimization', description: 'Deep-dive into performance and advanced patterns.', estimatedHours: 10, difficulty: 'advanced', order: 4, resources: [{ title: 'Research Papers', url: '#', type: 'paper' }] },
-  ],
-});
-
-const getMockQuiz = (topic) => ({
-  topic,
-  questions: [
-    { id: 1, question: `What is the primary purpose of ${topic}?`, options: ['To simplify complex logic', 'To enhance performance', 'To structure code better', 'All of the above'], answer: 3 },
-    { id: 2, question: `Which of the following best describes a key concept in ${topic}?`, options: ['Encapsulation', 'Polymorphism', 'Abstraction', 'Inheritance'], answer: 0 },
-    { id: 3, question: `What tool is commonly used alongside ${topic}?`, options: ['Git', 'Docker', 'Kubernetes', 'All of the above'], answer: 3 },
-    { id: 4, question: `In ${topic}, what does "state management" refer to?`, options: ['Managing server state', 'Managing UI data over time', 'Managing database records', 'Managing API calls'], answer: 1 },
-    { id: 5, question: `Which is a best practice when working with ${topic}?`, options: ['Write large, monolithic functions', 'Avoid testing', 'Use modular, reusable components', 'Ignore error handling'], answer: 2 },
-  ],
-});
-
 // ─── AI Helpers ───────────────────────────────────────────────────────────────
 
 const repairJSON = (str) => {
   try {
-    // Attempt to extract JSON from markdown code blocks or general text
     const jsonMatch = str.match(/\{[\s\S]*\}/);
     if (jsonMatch) return jsonMatch[0];
     return str;
@@ -53,21 +25,20 @@ const repairJSON = (str) => {
   }
 };
 
-const callAI = async (systemPrompt, userMessage, jsonMode = false) => {
+const callAI = async (systemPrompt, userMessage, jsonMode = false, maxTokens = 1500) => {
   if (!groq) return null;
   try {
     const model = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
     const response = await groq.chat.completions.create({
-      model: model,
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userMessage },
       ],
-      max_tokens: 1500,
+      max_tokens: maxTokens,
       temperature: 0.7,
       response_format: jsonMode ? { type: "json_object" } : { type: "text" },
     });
-    
     let content = response.choices[0]?.message?.content;
     if (jsonMode) content = repairJSON(content || "");
     return content;
@@ -77,68 +48,266 @@ const callAI = async (systemPrompt, userMessage, jsonMode = false) => {
   }
 };
 
-// ─── Routes ───────────────────────────────────────────────────────────────────
-
-// POST /ai/generate-path
-router.post('/generate-path', auth, async (req, res) => {
+const callAIChat = async (messages, maxTokens = 1200) => {
+  if (!groq) return null;
   try {
-    const { interests = ['JavaScript'], skillLevel = 'beginner', goals = '' } = req.body;
+    const model = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
+    const response = await groq.chat.completions.create({
+      model,
+      messages,
+      max_tokens: maxTokens,
+      temperature: 0.1,
+    });
+    return response.choices[0]?.message?.content;
+  } catch (err) {
+    console.warn('Groq chat error:', err.message);
+    return null;
+  }
+};
 
-    const systemPrompt = `You are an expert curriculum designer. Generate a personalized learning path as JSON with this exact structure:
+// ─── POST /ai/generate-profile ───────────────────────────────────────────────
+// Called after onboarding to generate a personalized AI profile
+router.post('/generate-profile', auth, async (req, res) => {
+  try {
+    const { role, education, skills, experience_level, interests, goals, time_commitment, learning_style, strengths, weaknesses, target_timeline } = req.body;
+
+    const systemPrompt = `You are an expert career counselor and learning architect. Based on a user's profile, generate a detailed, personalized AI learning profile as JSON with this EXACT structure:
 {
-  "title": "string",
-  "description": "string",
-  "category": "string",
-  "totalEstimatedHours": number,
-  "topics": [
-    {
-      "title": "string",
-      "description": "string",
-      "estimatedHours": number,
-      "difficulty": "beginner|intermediate|advanced",
-      "order": number,
-      "resources": [{"title": "string", "url": "string", "type": "docs|video|article|code"}]
-    }
+  "level": "beginner|intermediate|advanced",
+  "recommended_paths": [
+    { "title": "string", "description": "string", "skills": ["string"], "estimatedWeeks": number, "priority": "primary|secondary" }
+  ],
+  "weak_areas": [
+    { "area": "string", "suggestion": "string" }
+  ],
+  "strengths": [
+    { "area": "string", "detail": "string" }
+  ],
+  "roadmap": [
+    { "week": "string", "title": "string", "tasks": ["string"], "milestone": "string" }
+  ],
+  "alternative_paths": [
+    { "title": "string", "description": "string", "reason": "string" }
   ]
 }
+Generate 3-4 recommended_paths, 3-4 weak_areas, 2-3 strengths, 8-12 weeks of roadmap, and 2-3 alternative_paths.
 Return ONLY valid JSON.`;
 
-    const userMsg = `Create a learning path for: Interests: ${interests.join(', ')}, Skill level: ${skillLevel}, Goals: ${goals}`;
-    const aiResponse = await callAI(systemPrompt, userMsg, true);
+    const userMsg = `Generate a learning profile for:
+- Role: ${role}
+- Education: ${education}
+- Current Skills: ${(skills || []).join(', ')}
+- Experience Level: ${experience_level}
+- Interests: ${(interests || []).join(', ')}
+- Career Goals: ${goals}
+- Time Commitment: ${time_commitment}
+- Learning Style: ${learning_style}
+- Strengths: ${strengths}
+- Weaknesses: ${weaknesses}
+- Target Timeline: ${target_timeline}`;
 
-    let learningPath;
+    const aiResponse = await callAI(systemPrompt, userMsg, true, 2500);
+
+    let profile;
     if (aiResponse) {
-      try { learningPath = JSON.parse(aiResponse); } catch(e) { learningPath = getMockLearningPath(interests, skillLevel); }
+      try { profile = JSON.parse(aiResponse); } catch(e) { profile = getDefaultProfile(skills, experience_level, interests, goals); }
     } else {
-      learningPath = getMockLearningPath(interests, skillLevel);
+      profile = getDefaultProfile(skills, experience_level, interests, goals);
     }
 
-    // Save to DB if available
-    try {
-      if (supabase) {
-        const { data: saved, error } = await supabase.from('learning_paths').insert([{
-           user_id: req.user.id,
-           title: learningPath.title,
-           description: learningPath.description,
-           category: learningPath.category,
-           totalEstimatedHours: learningPath.totalEstimatedHours,
-           topics: learningPath.topics
-        }]).select().single();
-        
-        if (saved && !error) {
-           await supabase.from('users').update({ learningPath: saved.id }).eq('id', req.user.id);
-           return res.json({ ...learningPath, id: saved.id, source: aiResponse ? 'ai' : 'mock' });
-        }
+    // Store in ai_profiles table (upsert)
+    if (supabase) {
+      const { data: existing } = await supabase.from('ai_profiles').select('id').eq('user_id', req.user.id).single();
+      
+      if (existing) {
+        await supabase.from('ai_profiles').update({
+          level: profile.level,
+          recommended_paths: profile.recommended_paths,
+          weak_areas: profile.weak_areas,
+          strengths: profile.strengths,
+          roadmap: profile.roadmap,
+          alternative_paths: profile.alternative_paths,
+        }).eq('user_id', req.user.id);
+      } else {
+        await supabase.from('ai_profiles').insert([{
+          user_id: req.user.id,
+          level: profile.level,
+          recommended_paths: profile.recommended_paths,
+          weak_areas: profile.weak_areas,
+          strengths: profile.strengths,
+          roadmap: profile.roadmap,
+          alternative_paths: profile.alternative_paths,
+        }]);
       }
-    } catch(e) {}
+    }
 
-    res.json({ ...learningPath, source: aiResponse ? 'ai' : 'mock' });
+    res.json({ profile, source: aiResponse ? 'ai' : 'fallback' });
+  } catch (err) {
+    console.error('generate-profile error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── GET /ai/profile ─────────────────────────────────────────────────────────
+// Fetch the user's AI profile
+router.get('/profile', auth, async (req, res) => {
+  try {
+    if (supabase) {
+      const { data, error } = await supabase.from('ai_profiles').select('*').eq('user_id', req.user.id).single();
+      if (data && !error) return res.json(data);
+    }
+    res.json(null);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST /ai/chat
+// ─── POST /ai/mentor-chat ────────────────────────────────────────────────────
+// Individual AI mentor interaction (No history saved)
+router.post('/mentor-chat', auth, async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: 'Message is required' });
+
+    // Fetch user data and AI profile for context
+    let userContext = '';
+    if (supabase) {
+      const [{ data: userData }, { data: profileData }] = await Promise.all([
+        supabase.from('users').select('name, role, skills, interests, experience_level, goals, strengths, weaknesses').eq('id', req.user.id).single(),
+        supabase.from('ai_profiles').select('level, weak_areas').eq('user_id', req.user.id).single(),
+      ]);
+      if (userData) {
+        userContext = `\n\nUser Context:
+- Name: ${userData.name}
+- Interests: ${(userData.interests || []).join(', ')}
+- Goal: ${userData.goals || 'Improve skills'}`;
+      }
+    }
+
+    const systemPrompt = `ACT AS A CURT TASK BOT. 
+RULES:
+1. MAX 15 WORDS TOTAL.
+2. NO GREETINGS. 
+3. NO INTROS. 
+4. NO FORMATTING.
+5. JUST THE ANSWER.
+${userContext}`;
+
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: `${message} (RESPOND IN MAX 10 WORDS. NO INTRO.)` },
+    ];
+
+    const reply = await callAIChat(messages, 50); // Hard limit to 50 tokens
+
+    if (!reply) {
+      return res.json({ 
+        reply: `I understand your question about "${message}". Start with project-based learning and build something small today!`,
+        source: 'fallback' 
+      });
+    }
+
+    // Chat history saving removed as per request
+
+    res.json({ reply, source: 'ai' });
+  } catch (err) {
+    console.error('mentor-chat error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── GET /ai/mentor-chat/history ─────────────────────────────────────────────
+router.get('/mentor-chat/history', auth, async (req, res) => {
+  // Return empty history as per request
+  res.json({ messages: [] });
+});
+
+// ─── GET /ai/next-action ─────────────────────────────────────────────────────
+// Fetch or generate the next actionable task for the user
+router.get('/next-action', auth, async (req, res) => {
+  try {
+    if (supabase) {
+      // Check for a pending action
+      const { data: existing } = await supabase.from('next_actions')
+        .select('*')
+        .eq('user_id', req.user.id)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+        
+      if (existing) return res.json(existing);
+    }
+
+    // Generate a new one
+    const { data: userData } = await supabase.from('users').select('*').eq('id', req.user.id).single();
+    const { data: history } = await supabase.from('user_activity').select('*').eq('user_id', req.user.id).order('created_at', { ascending: false }).limit(5);
+    const { data: chat } = await supabase.from('ai_chats').select('messages').eq('user_id', req.user.id).limit(1).single();
+
+    const systemPrompt = `You are Mentra, a hyper-focused AI coach. Your goal is to give the user ONE specific "Next Action" to take today. 
+The action should be manageable (15-60 mins) and directly related to their interests: ${(userData?.interests || []).join(', ')}.
+Output EXACTLY this JSON:
+{
+  "action": "Brief title of the task",
+  "reason": "Why this is important now",
+  "estimated_time": "Time in mins (e.g. 30 mins)"
+}
+Return ONLY valid JSON.`;
+
+    const userMsg = `Username: ${userData?.name}. Skills: ${(userData?.skills || []).join(', ')}. Recent history: ${JSON.stringify(history)}. Recent Chat: ${JSON.stringify(chat?.messages?.slice(-3))}. Generate my next action.`;
+
+    const aiRes = await callAI(systemPrompt, userMsg, true, 800);
+    let actionData;
+    try {
+      actionData = JSON.parse(aiRes);
+    } catch(e) {
+      actionData = {
+        action: "Build a small mini-project",
+        reason: "Applying your skills to a real-world use case is the fastest way to learn.",
+        estimated_time: "45 mins"
+      };
+    }
+
+    if (supabase) {
+      const { data: savedAction } = await supabase.from('next_actions').insert([{
+        user_id: req.user.id,
+        ...actionData,
+        status: 'pending'
+      }]).select().single();
+      return res.json(savedAction);
+    }
+
+    res.json(actionData);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── POST /ai/next-action/status ─────────────────────────────────────────────
+router.post('/next-action/status', auth, async (req, res) => {
+  try {
+    const { id, status } = req.body; // status: 'completed' or 'skipped'
+    if (supabase) {
+      await supabase.from('next_actions').update({ status }).eq('id', id).eq('user_id', req.user.id);
+      
+      // If completed, add to user activity
+      if (status === 'completed') {
+        const { data: action } = await supabase.from('next_actions').select('action').eq('id', id).single();
+        await supabase.from('user_activity').insert([{
+          user_id: req.user.id,
+          activity_type: 'next_action_complete',
+          question: action?.action || 'Action Completed',
+          answer: 'Completed successfully'
+        }]);
+      }
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── POST /ai/chat (kept for AI assistant page) ──────────────────────────────
 router.post('/chat', auth, async (req, res) => {
   try {
     const { message, history = [] } = req.body;
@@ -146,44 +315,28 @@ router.post('/chat', auth, async (req, res) => {
 
     const systemPrompt = `You are Mentra, an expert AI learning assistant and mentor. You help students learn programming, technology, and academic subjects. You're encouraging, clear, and provide practical examples. Keep answers concise but complete. Format code using markdown code blocks.`;
 
-    let reply;
-    if (groq) {
-      try {
-        const messages = [
-          { role: 'system', content: systemPrompt },
-          ...history.slice(-6).map(m => ({ role: m.role || 'user', content: m.content || m })), // Keep last 6 messages
-          { role: 'user', content: message },
-        ];
-        const model = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
-        const response = await groq.chat.completions.create({
-          model: model,
-          messages,
-          max_tokens: 800,
-          temperature: 0.7,
-        });
-        reply = response.choices[0]?.message?.content;
-      } catch(e) {
-        console.warn('Groq chat error:', e.message);
-      }
-    }
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      ...history.slice(-6).map(m => ({ role: m.role || 'user', content: m.content || m })),
+      { role: 'user', content: message },
+    ];
+
+    const reply = await callAIChat(messages);
 
     if (!reply) {
-      // Smart mock responses
-      const lowerMsg = message.toLowerCase();
-      if (lowerMsg.includes('react')) reply = "React is a JavaScript library for building user interfaces using a component-based architecture. Key concepts include:\n\n1. **Components** – Reusable UI building blocks\n2. **State** – Data that changes over time (`useState`)\n3. **Props** – Data passed between components\n4. **Hooks** – Functions like `useEffect`, `useMemo`\n\nStart with the official docs at react.dev — they have excellent interactive tutorials!";
-      else if (lowerMsg.includes('javascript') || lowerMsg.includes('js')) reply = "JavaScript is the language of the web! Key things to learn:\n\n- **Variables**: `let`, `const`, `var`\n- **Functions**: Arrow functions, callbacks\n- **Async**: Promises, async/await\n- **DOM**: Manipulating web pages\n\nI recommend starting with JavaScript.info — it's the best free resource online.";
-      else if (lowerMsg.includes('python')) reply = "Python is excellent for beginners and professionals alike. Great for:\n\n- **Web Dev**: Django, FastAPI\n- **Data Science**: Pandas, NumPy\n- **AI/ML**: TensorFlow, PyTorch\n- **Automation**: Scripting, bots\n\nStart with `print('Hello World!')` and explore from there!";
-      else if (lowerMsg.includes('hello') || lowerMsg.includes('hi')) reply = "Hello! 👋 I'm Mentra, your AI learning assistant. I'm here to help you with programming, technology, and academic questions. What would you like to learn today?";
-      else reply = `Great question about "${message}"! As your AI mentor, I can help you dive deep into this topic. Here's what I'd suggest:\n\n1. **Break it down** – Start with the fundamentals\n2. **Practice** – Build small projects\n3. **Ask questions** – Don't hesitate to explore further\n\nCould you tell me more specifically what aspect you'd like to explore? I'll tailor my explanation to your level.`;
+      return res.json({ 
+        reply: `Great question about "${message}"! Let me break it down:\n\n1. **Start with fundamentals** — Build a solid foundation\n2. **Practice** — Build small projects\n3. **Explore further** — Dive deeper as you gain confidence\n\nWould you like me to elaborate on any of these?`,
+        source: 'fallback' 
+      });
     }
 
-    res.json({ reply, source: groq ? 'ai' : 'mock' });
+    res.json({ reply, source: 'ai' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST /ai/quiz
+// ─── POST /ai/quiz ───────────────────────────────────────────────────────────
 router.post('/quiz', auth, async (req, res) => {
   try {
     const { topic = 'JavaScript', difficulty = 'intermediate' } = req.body;
@@ -206,28 +359,241 @@ Return ONLY valid JSON.`;
 
     let quiz;
     if (aiResponse) {
-      try { quiz = JSON.parse(aiResponse); } catch(e) { quiz = getMockQuiz(topic); }
+      try { quiz = JSON.parse(aiResponse); } catch(e) { quiz = getDefaultQuiz(topic); }
     } else {
-      quiz = getMockQuiz(topic);
+      quiz = getDefaultQuiz(topic);
     }
 
-    res.json({ ...quiz, source: aiResponse ? 'ai' : 'mock' });
+    res.json({ ...quiz, source: aiResponse ? 'ai' : 'fallback' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST /ai/recommendations
+// ─── POST /ai/recommendations (now dynamic) ─────────────────────────────────
 router.post('/recommendations', auth, async (req, res) => {
   try {
-    const { completedTopics = [], interests = [] } = req.body;
-    const recommendations = [
-      { title: 'Next.js Advanced Patterns', category: 'Frontend', reason: 'Based on your React progress', difficulty: 'intermediate' },
-      { title: 'System Design Fundamentals', category: 'Architecture', reason: 'Popular among developers at your level', difficulty: 'intermediate' },
-      { title: 'TypeScript Deep Dive', category: 'Languages', reason: 'Complements your JavaScript skills', difficulty: 'intermediate' },
-      { title: 'Docker & Containerization', category: 'DevOps', reason: 'High demand skill in the industry', difficulty: 'beginner' },
-    ];
-    res.json({ recommendations, source: 'mock' });
+    // Fetch user AI profile for context
+    let profileContext = '';
+    if (supabase) {
+      const { data: profile } = await supabase.from('ai_profiles').select('*').eq('user_id', req.user.id).single();
+      if (profile) {
+        profileContext = `User level: ${profile.level}. Current paths: ${JSON.stringify(profile.recommended_paths?.slice(0, 2))}. Weak areas: ${JSON.stringify(profile.weak_areas)}`;
+      }
+    }
+
+    if (profileContext && groq) {
+      const systemPrompt = `Based on the user's AI profile, generate 4 personalized learning recommendations as JSON:
+{
+  "recommendations": [
+    { "title": "string", "category": "string", "reason": "string", "difficulty": "beginner|intermediate|advanced" }
+  ]
+}
+Return ONLY valid JSON.`;
+      const aiResponse = await callAI(systemPrompt, profileContext, true);
+      if (aiResponse) {
+        try {
+          const parsed = JSON.parse(aiResponse);
+          return res.json({ recommendations: parsed.recommendations, source: 'ai' });
+        } catch(e) {}
+      }
+    }
+
+    // Fallback
+    const { interests = [] } = req.body;
+    const topic = interests[0] || 'Technology';
+    res.json({
+      recommendations: [
+        { title: `Advanced ${topic} Patterns`, category: topic, reason: 'Based on your profile', difficulty: 'intermediate' },
+        { title: 'System Design Fundamentals', category: 'Architecture', reason: 'Essential for career growth', difficulty: 'intermediate' },
+        { title: 'Data Structures & Algorithms', category: 'CS Fundamentals', reason: 'Core competency', difficulty: 'intermediate' },
+      ],
+      source: 'fallback'
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── Fallback Generators ─────────────────────────────────────────────────────
+
+function getDefaultProfile(skills, experience_level, interests, goals) {
+  return {
+    level: experience_level || 'beginner',
+    recommended_paths: [
+      { title: `${(interests || ['Web Development'])[0]} Mastery`, description: `A comprehensive path to master ${(interests || ['Web Development'])[0]}`, skills: skills || ['JavaScript'], estimatedWeeks: 12, priority: 'primary' },
+      { title: 'CS Fundamentals', description: 'Strengthen your computer science foundations', skills: ['Data Structures', 'Algorithms'], estimatedWeeks: 8, priority: 'secondary' },
+    ],
+    weak_areas: [
+      { area: 'System Design', suggestion: 'Start with basic design patterns and scale up' },
+      { area: 'Testing', suggestion: 'Learn unit testing frameworks for your primary language' },
+    ],
+    strengths: [
+      { area: (skills || ['Problem Solving'])[0], detail: 'Strong foundation to build upon' },
+    ],
+    roadmap: [
+      { week: 'Week 1-2', title: 'Foundations', tasks: ['Review core concepts', 'Set up development environment', 'Complete introductory tutorials'], milestone: 'Environment ready' },
+      { week: 'Week 3-4', title: 'Core Skills', tasks: ['Deep dive into primary technology', 'Build first mini-project', 'Practice exercises'], milestone: 'First project complete' },
+      { week: 'Week 5-6', title: 'Intermediate', tasks: ['Learn design patterns', 'Build portfolio project', 'Code review practices'], milestone: 'Portfolio project started' },
+      { week: 'Week 7-8', title: 'Advanced Practice', tasks: ['Tackle complex problems', 'Contribute to open source', 'Practice interviews'], milestone: 'Ready for challenges' },
+    ],
+    alternative_paths: [
+      { title: 'DevOps & Cloud', description: 'Learn cloud infrastructure and CI/CD', reason: 'High demand and complements development skills' },
+      { title: 'Mobile Development', description: 'Build cross-platform mobile apps', reason: 'Growing market with strong career prospects' },
+    ],
+  };
+}
+
+function getDefaultLearningPath(interests, skillLevel) {
+  return {
+    title: `Personalized ${interests[0] || 'Technology'} Learning Path`,
+    description: `A curated learning journey tailored for a ${skillLevel} learner interested in ${interests.join(', ')}.`,
+    category: interests[0] || 'Technology',
+    totalEstimatedHours: 45,
+    topics: [
+      { title: 'Foundations & Core Concepts', description: 'Build a solid understanding of the fundamentals.', estimatedHours: 8, difficulty: 'beginner', order: 1, resources: [{ title: 'Official Documentation', url: '#', type: 'docs' }, { title: 'Beginner Video Course', url: '#', type: 'video' }] },
+      { title: 'Intermediate Patterns & Best Practices', description: 'Learn how professionals approach common problems.', estimatedHours: 12, difficulty: 'intermediate', order: 2, resources: [{ title: 'Advanced Tutorial Series', url: '#', type: 'video' }] },
+      { title: 'Building Real Projects', description: 'Apply your knowledge to hands-on projects.', estimatedHours: 15, difficulty: 'intermediate', order: 3, resources: [{ title: 'Project Ideas', url: '#', type: 'article' }] },
+      { title: 'Advanced Topics & Optimization', description: 'Deep-dive into performance and advanced patterns.', estimatedHours: 10, difficulty: 'advanced', order: 4, resources: [{ title: 'Research Papers', url: '#', type: 'paper' }] },
+    ],
+  };
+}
+
+function getDefaultQuiz(topic) {
+  return {
+    topic,
+    questions: [
+      { id: 1, question: `What is the primary purpose of ${topic}?`, options: ['To simplify complex logic', 'To enhance performance', 'To structure code better', 'All of the above'], answer: 3 },
+      { id: 2, question: `Which of the following best describes a key concept in ${topic}?`, options: ['Encapsulation', 'Polymorphism', 'Abstraction', 'Inheritance'], answer: 0 },
+      { id: 3, question: `What tool is commonly used alongside ${topic}?`, options: ['Git', 'Docker', 'Kubernetes', 'All of the above'], answer: 3 },
+      { id: 4, question: `In ${topic}, what does "state management" refer to?`, options: ['Managing server state', 'Managing UI data over time', 'Managing database records', 'Managing API calls'], answer: 1 },
+      { id: 5, question: `Which is a best practice when working with ${topic}?`, options: ['Write large, monolithic functions', 'Avoid testing', 'Use modular, reusable components', 'Ignore error handling'], answer: 2 },
+    ],
+  };
+}
+// ─── GET /ai/daily-insights ────────────────────────────────────────────────────
+// Generates or fetches today's insights
+router.get('/daily-insights', auth, async (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+
+    if (supabase) {
+      // 1. Check if today's insight already exists
+      const { data: existing } = await supabase
+        .from('daily_insights')
+        .select('*')
+        .eq('user_id', req.user.id)
+        .eq('generate_date', today)
+        .maybeSingle();
+
+      if (existing) {
+        return res.json({ insight: existing });
+      }
+
+      // 2. Fetch user context & history
+      const { data: userContext } = await supabase.from('users').select('*').eq('id', req.user.id).single();
+      const { data: history } = await supabase.from('user_activity').select('question, answer').eq('user_id', req.user.id).order('created_at', { ascending: false }).limit(5);
+
+      const isNewUser = !history || history.length === 0;
+
+      const systemPrompt = `You are a Mentra Expert Knowledge Curator. Your task is to generate 3 to 5 highly specific, surprising, and engaging fun facts.
+CRITICAL: The facts MUST be directly related to the user's interests and field: ${(userContext?.interests || []).join(', ')}. 
+Avoid extremely common facts (like the first computer bug moth). Focus on industry-specific breakthroughs, historical oddities in their field, or surprising statistics.
+
+Output EXACTLY this JSON structure:
+{
+  "facts": ["Specific personalized fact 1", "Specific personalized fact 2", "Specific personalized fact 3"]
+}
+Keep each fact concise (1-2 sentences). Return ONLY valid JSON.`;
+
+      let userMsg = isNewUser
+        ? `Generate 5 surprising industry facts for a professional in the field of: ${(userContext?.interests || []).join(', ')}.`
+        : `User: ${userContext?.name}. Field/Interests: ${(userContext?.interests || []).join(', ')}. Previous interaction history suggests they like deep insights. Generate 5 new specific fun facts for them.`;
+
+      const aiResponse = await callAI(systemPrompt, userMsg, true, 1000);
+      let insightData;
+      try { 
+        insightData = JSON.parse(aiResponse); 
+        if (!insightData.facts || !Array.isArray(insightData.facts)) throw new Error('Invalid format');
+      } catch(e) { 
+        // Targeted fallback based on user interests if AI fails JSON
+        const primaryInterest = (userContext?.interests || [])[0] || 'Technology';
+        insightData = {
+          facts: [
+            `In ${primaryInterest}, breakthroughs often happen in cycles of 18 months, similar to Moore's Law.`,
+            `The earliest pioneers of ${primaryInterest} often came from diverse backgrounds like philosophy and arts.`,
+            `Experts estimate that 90% of the data in ${primaryInterest} was created in just the last two years.`,
+            `The most successful practitioners in ${primaryInterest} attribute their success to 'interdisciplinary thinking'.`,
+            `A surprising number of ${primaryInterest} concepts were originally proposed in science fiction novels from the 1960s.`
+          ]
+        };
+      }
+
+      // Store facts as a single string joined by newline for the DB
+      const combinedFacts = insightData.facts.join('\n');
+
+      // 3. Save to database
+      const { data: inserted } = await supabase.from('daily_insights').insert([{
+        user_id: req.user.id,
+        generate_date: today,
+        fact: combinedFacts,
+        // (Other fields like question, tip, task are now empty or unused)
+      }]).select().single();
+
+      return res.json({ insight: { ...inserted, facts: insightData.facts } });
+    }
+
+    // Fallback if no DB
+    res.json({ insight: {
+      fact: "The first computer bug was an actual moth.",
+      question: "What's a tool you want to learn?",
+      tip: "Consistency > Intensity.",
+      task: "Read one article today.",
+      answered: false
+    }});
+  } catch (err) {
+    console.error('daily-insights error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── POST /ai/daily-insights/answer ──────────────────────────────────────────
+router.post('/daily-insights/answer', auth, async (req, res) => {
+  try {
+    const { insightId, question, answer } = req.body;
+    
+    if (supabase) {
+      // 1. Record activity
+      await supabase.from('user_activity').insert([{
+        user_id: req.user.id,
+        insight_id: insightId,
+        question,
+        answer
+      }]);
+
+      // 2. Mark insight as answered
+      await supabase.from('daily_insights').update({ answered: true }).eq('id', insightId);
+      
+      // 3. (Optional) Run a background update to the AI profile or user interests based on answer
+      // For now, we just save the activity.
+
+      return res.json({ success: true });
+    }
+    res.json({ success: true });
+  } catch(err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── POST /ai/daily-insights/refresh ──────────────────────────────────────────
+// Force regenerates today's insights
+router.post('/daily-insights/refresh', auth, async (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    if (supabase) {
+      await supabase.from('daily_insights').delete().eq('user_id', req.user.id).eq('generate_date', today);
+    }
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
