@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 15000,
+  timeout: 30000,
 });
 
 // Attach JWT to every request
@@ -36,17 +36,25 @@ export const login = (data) => api.post('/auth/login', data);
 // ─── User ────────────────────────────────────────────────────────────────────
 export const getProfile = () => api.get('/user/profile');
 export const updateProfile = (data) => api.put('/user/profile', data);
-export const getMentors = () => api.get('/user/mentors');
+export const submitOnboarding = (data) => api.post('/user/onboarding', data);
 export const markNotificationsRead = () => api.post('/user/notifications/read');
 export const completeTopic = (topic) => api.put('/user/progress/complete-topic', { topic });
 
 // ─── AI ──────────────────────────────────────────────────────────────────────
-export const generateLearningPath = (data) => api.post('/ai/generate-path', data);
+export const generateAIProfile = (data) => api.post('/ai/generate-profile', data);
+export const getAIProfile = () => api.get('/ai/profile');
+export const getNextAction = () => api.get('/ai/next-action');
+export const updateActionStatus = (data) => api.post('/ai/next-action/status', data);
 export const chatWithAI = (data) => api.post('/ai/chat', data);
+export const mentorChat = (data) => api.post('/ai/mentor-chat', data);
+export const getMentorChatHistory = () => api.get('/ai/mentor-chat/history');
 export const generateQuiz = (data) => api.post('/ai/quiz', data);
 export const getRecommendations = (data) => api.post('/ai/recommendations', data);
+export const getDailyInsights = () => api.get('/ai/daily-insights');
+export const refreshDailyInsights = () => api.post('/ai/daily-insights/refresh');
+export const submitInsightAnswer = (data) => api.post('/ai/daily-insights/answer', data);
 
-// ─── Chat ────────────────────────────────────────────────────────────────────
+// ─── Chat (community rooms) ─────────────────────────────────────────────────
 export const sendMessage = (data) => api.post('/chat/send', data);
 export const getChatHistory = (room, limit = 50) => api.get(`/chat/history/${room}?limit=${limit}`);
 export const getChatRooms = () => api.get('/chat/rooms');

@@ -27,14 +27,22 @@ export const AuthProvider = ({ children }) => {
   const signup = async ({ name, email, password, role }) => {
     const res = await api.signup({ name, email, password, role });
     handleAuth(res.data.token, res.data.user);
-    router.push('/dashboard');
+    if (!res.data.user.onboarding_completed) {
+      router.push('/onboarding');
+    } else {
+      router.push('/dashboard');
+    }
     return res.data;
   };
 
   const login = async ({ email, password }) => {
     const res = await api.login({ email, password });
     handleAuth(res.data.token, res.data.user);
-    router.push('/dashboard');
+    if (!res.data.user.onboarding_completed) {
+      router.push('/onboarding');
+    } else {
+      router.push('/dashboard');
+    }
     return res.data;
   };
 

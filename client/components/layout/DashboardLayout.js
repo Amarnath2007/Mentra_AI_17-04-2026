@@ -5,16 +5,16 @@ import { useAuth } from '../../lib/auth';
 import {
   LayoutDashboard, MessageSquare, Bot, BookOpen, Brain,
   Trophy, Bell, LogOut, Menu, X, ChevronRight, Zap,
-  Users, Settings, Sparkles
+  Users, Settings, Sparkles, Compass
 } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/chat', label: 'Chat', icon: MessageSquare },
-  { href: '/dashboard/ai-assistant', label: 'AI Assistant', icon: Bot },
-  { href: '/dashboard/learning-path', label: 'Learning Path', icon: BookOpen },
-  { href: '/dashboard/quiz', label: 'Quiz', icon: Brain },
-  { href: '/dashboard/mentors', label: 'Mentors', icon: Users },
+  { href: '/dashboard/mentor-chat', label: 'AI Mentor', icon: Bot },
+  { href: '/dashboard/chat', label: 'Community Chat', icon: MessageSquare },
+  { href: '/dashboard/facts', label: 'Daily Fun Facts', icon: Sparkles },
+  { href: '/dashboard/mentors', label: 'Find Mentors', icon: Users },
+  { href: '/dashboard/courses', label: 'Explore Courses', icon: Compass },
 ];
 
 const getInitials = (name = '') => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -25,13 +25,15 @@ export default function DashboardLayout({ children, title = 'Dashboard' }) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, message: 'New learning path generated!', type: 'recommendation', read: false },
-    { id: 2, message: 'Dr. Priya sent you a message', type: 'message', read: false },
-    { id: 3, message: 'Quiz available: React Hooks', type: 'quiz', read: true },
-  ]);
+  const [notifications, setNotifications] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+
+  useEffect(() => {
+    if (user && !user.onboarding_completed) {
+      router.push('/onboarding');
+    }
+  }, [user, router]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -124,13 +126,6 @@ export default function DashboardLayout({ children, title = 'Dashboard' }) {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* XP Badge */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.2)' }}>
-              <Zap size={13} style={{ color: '#fb923c' }} />
-              <span className="text-xs font-600" style={{ color: '#fb923c', fontWeight: 600 }}>
-                {user?.progress?.xpPoints || 0} XP
-              </span>
-            </div>
 
             {/* Notifications */}
             <div className="relative">
