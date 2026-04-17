@@ -5,17 +5,11 @@ import { submitOnboarding, generateAIProfile } from '../lib/api';
 import { ChevronRight, ChevronLeft, Sparkles, Loader, CheckCircle, User, GraduationCap, Code, Briefcase, Heart, Target, Clock, Brain, Shield, AlertTriangle, Calendar } from 'lucide-react';
 
 const STEPS = [
-  { key: 'role', title: 'What describes you best?', icon: User, type: 'single', options: ['Student', 'Working Professional', 'Freelancer', 'Career Switcher', 'Entrepreneur', 'Hobbyist', 'Other'] },
-  { key: 'education', title: 'What is your education level?', icon: GraduationCap, type: 'single', options: ['High School', 'Diploma / ITI', 'Undergraduate', 'Graduate (Bachelors)', 'Post Graduate (Masters)', 'PhD', 'Self-Taught', 'Other'] },
-  { key: 'skills', title: 'Select your current skills', subtitle: 'Choose all that apply, or type your own', icon: Code, type: 'multi-custom', options: ['JavaScript', 'Python', 'React', 'Node.js', 'Java', 'C/C++', 'HTML/CSS', 'SQL', 'Excel / Sheets', 'Communication', 'Public Speaking', 'Marketing', 'Graphic Design', 'Video Editing', 'Writing / Content', 'Data Analysis', 'Machine Learning', 'Project Management', 'Finance / Accounting', 'Sales', 'Photography', 'Music / Audio', 'Teaching', 'Research'] },
-  { key: 'experience_level', title: 'What is your experience level?', icon: Briefcase, type: 'single', options: ['Complete Beginner', 'Beginner (< 1 year)', 'Intermediate (1-3 years)', 'Advanced (3-5 years)', 'Expert (5+ years)'] },
-  { key: 'interests', title: 'What interests you most?', subtitle: 'Choose all that apply, or type your own', icon: Heart, type: 'multi-custom', options: ['Web Development', 'Mobile Development', 'AI / Machine Learning', 'Data Science', 'Cloud & DevOps', 'Cybersecurity', 'Game Development', 'Blockchain / Web3', 'UI/UX Design', 'Digital Marketing', 'Content Creation', 'Business & Entrepreneurship', 'Finance & Trading', 'Healthcare / Biotech', 'Education / Teaching', 'Music / Arts', 'Mechanical / Civil Engg', 'Electronics / IoT', 'Research & Academia'] },
-  { key: 'goals', title: 'What is your primary career goal?', icon: Target, type: 'single', options: ['Land my first job', 'Switch to a new career', 'Get promoted / level up', 'Build my own startup', 'Freelance / consulting', 'Academic research', 'Learn a new skill for fun', 'Prepare for exams / certifications', 'Other'] },
-  { key: 'time_commitment', title: 'How much time can you dedicate weekly?', icon: Clock, type: 'single', options: ['2-5 hours', '5-10 hours', '10-20 hours', '20-30 hours', '30+ hours (Full-time)'] },
-  { key: 'learning_style', title: 'How do you learn best?', icon: Brain, type: 'single', options: ['Video tutorials', 'Reading documentation / articles', 'Hands-on projects', 'Interactive exercises', 'Mentorship / guided learning', 'Group study / discussions', 'Mix of everything'] },
-  { key: 'strengths', title: 'What are your strengths?', icon: Shield, type: 'text', placeholder: 'e.g., Problem solving, quick learner, creative thinking, good with numbers, strong communication...' },
-  { key: 'weaknesses', title: 'What areas do you struggle with?', icon: AlertTriangle, type: 'text', placeholder: 'e.g., Staying consistent, understanding theory, time management, public speaking...' },
-  { key: 'target_timeline', title: 'What is your target timeline?', icon: Calendar, type: 'single', options: ['1-3 months', '3-6 months', '6-12 months', '1-2 years', 'No rush, long-term'] },
+  { key: 'interests', title: 'What interests you most?', subtitle: 'Select fields you want to master. Answer for better personalization.', icon: Heart, type: 'multi-custom', options: ['Web Development', 'AI / Machine Learning', 'Data Science', 'UI/UX Design', 'Digital Marketing', 'Content Creation', 'Business & Entrepreneurship', 'Finance & Trading', 'Cybersecurity', 'Mobile Dev'] },
+  { key: 'goals', title: 'What is your primary goal?', icon: Target, type: 'single', options: ['Land my first job', 'Switch to a new career', 'Build my own startup', 'Freelance / consulting', 'Learn a new skill for fun', 'Prepare for exams'] },
+  { key: 'skills', title: 'What are your current skills?', icon: Code, type: 'multi-custom', options: ['JavaScript', 'Python', 'React', 'Design', 'Marketing', 'Writing', 'Data Analysis', 'Management'] },
+  { key: 'experience_level', title: 'Your current experience level?', icon: Briefcase, type: 'single', options: ['Beginner (Starting now)', 'Junior (< 1 year)', 'Intermediate (1-3 years)', 'Advanced (3+ years)'] },
+  { key: 'learning_style', title: 'How do you learn best?', icon: Brain, type: 'single', options: ['Video tutorials', 'Hands-on projects', 'Reading articles', 'Mentorship'] },
 ];
 
 export default function Onboarding() {
@@ -272,21 +266,35 @@ export default function Onboarding() {
           )}
 
           {/* Navigation */}
-          <div className="flex gap-3 mt-10">
-            {step > 0 && (
-              <button onClick={handleBack} className="btn-secondary flex-1 justify-center py-3">
-                <ChevronLeft size={16} /> Back
+          <div className="flex flex-col gap-3 mt-10">
+            <div className="flex gap-3">
+              {step > 0 && (
+                <button onClick={handleBack} className="btn-secondary flex-1 justify-center py-3 px-4">
+                  <ChevronLeft size={16} /> Back
+                </button>
+              )}
+              {step < STEPS.length - 1 ? (
+                <button onClick={handleNext} disabled={!isStepValid()} className="btn-primary flex-1 justify-center py-3 px-4">
+                  Continue <ChevronRight size={16} />
+                </button>
+              ) : (
+                <button onClick={handleSubmit} disabled={!isStepValid()} className="btn-primary flex-1 justify-center py-3 px-4" style={{ background: '#16a34a' }}>
+                  <Sparkles size={16} /> Generate My AI Profile
+                </button>
+              )}
+            </div>
+            
+            <div className="flex flex-col items-center gap-2">
+              <button 
+                onClick={step < STEPS.length - 1 ? handleNext : handleSubmit} 
+                className="text-xs text-slate-400 hover:text-slate-600 transition-colors font-500 uppercase tracking-wider"
+              >
+                Skip this step
               </button>
-            )}
-            {step < STEPS.length - 1 ? (
-              <button onClick={handleNext} disabled={!isStepValid()} className="btn-primary flex-1 justify-center py-3">
-                Continue <ChevronRight size={16} />
-              </button>
-            ) : (
-              <button onClick={handleSubmit} disabled={!isStepValid()} className="btn-primary flex-1 justify-center py-3" style={{ background: '#16a34a' }}>
-                <Sparkles size={16} /> Generate My AI Profile
-              </button>
-            )}
+              <p className="text-[11px] text-slate-400 text-center px-4">
+                Note: Answer all questions for better AI personalization.
+              </p>
+            </div>
           </div>
         </div>
       </div>
