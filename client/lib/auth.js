@@ -27,10 +27,10 @@ export const AuthProvider = ({ children }) => {
   const signup = async ({ name, email, password, role }) => {
     const res = await api.signup({ name, email, password, role });
     handleAuth(res.data.token, res.data.user);
-    if (!res.data.user.onboarding_completed) {
+    if (!res.data.user.onboarding_completed && res.data.user.role === 'student') {
       router.push('/onboarding');
     } else {
-      router.push('/dashboard');
+      router.push(res.data.user.role === 'mentor' ? '/mentor' : '/dashboard');
     }
     return res.data;
   };
@@ -38,10 +38,10 @@ export const AuthProvider = ({ children }) => {
   const login = async ({ email, password }) => {
     const res = await api.login({ email, password });
     handleAuth(res.data.token, res.data.user);
-    if (!res.data.user.onboarding_completed) {
+    if (!res.data.user.onboarding_completed && res.data.user.role === 'student') {
       router.push('/onboarding');
     } else {
-      router.push('/dashboard');
+      router.push(res.data.user.role === 'mentor' ? '/mentor' : '/dashboard');
     }
     return res.data;
   };

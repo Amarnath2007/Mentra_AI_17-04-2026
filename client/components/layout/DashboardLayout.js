@@ -8,13 +8,20 @@ import {
   Users, Settings, Sparkles, Compass
 } from 'lucide-react';
 
-const navItems = [
+const studentNavItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/dashboard/mentor-chat', label: 'AI Mentor', icon: Bot },
   { href: '/dashboard/chat', label: 'Community Chat', icon: MessageSquare },
   { href: '/dashboard/facts', label: 'Daily Fun Facts', icon: Sparkles },
   { href: '/dashboard/mentors', label: 'Find Mentors', icon: Users },
   { href: '/dashboard/courses', label: 'Explore Courses', icon: Compass },
+];
+
+const mentorNavItems = [
+  { href: '/mentor', label: 'Mentor Overview', icon: LayoutDashboard },
+  { href: '/mentor/students', label: 'My Students', icon: Users },
+  { href: '/dashboard/chat', label: 'Community Chat', icon: MessageSquare },
+  { href: '/dashboard/courses', label: 'Browse Courses', icon: Compass },
 ];
 
 const getInitials = (name = '') => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -81,7 +88,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }) {
         {/* Nav */}
         <nav className="flex-1 px-3 mt-4 space-y-1 overflow-y-auto">
           <p className="px-3 mb-2 text-xs font-600 uppercase tracking-widest text-slate-400">Navigation</p>
-          {navItems.map(({ href, label, icon: Icon }) => {
+          {(user.role === 'mentor' ? mentorNavItems : studentNavItems).map(({ href, label, icon: Icon }) => {
             const active = router.pathname === href;
             return (
               <Link key={href} href={href}

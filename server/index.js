@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const aiRoutes = require('./routes/ai');
 const chatRoutes = require('./routes/chat');
+const mentorRoutes = require('./routes/mentor');
 const setupSocket = require('./socket');
 
 const app = express();
@@ -41,6 +42,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/ai', aiRoutes);
 app.use('/chat', chatRoutes);
+app.use('/mentor', mentorRoutes);
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));

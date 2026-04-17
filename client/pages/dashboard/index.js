@@ -38,6 +38,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!loading && !user) { router.push('/login'); return; }
+    if (user && user.role === 'mentor') { router.push('/mentor'); return; }
     if (user) fetchData();
   }, [user, loading]);
 
@@ -227,8 +228,8 @@ export default function Dashboard() {
                   <h4 className="font-600 text-sm" style={{ fontWeight: 600 }}>Need Help?</h4>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed mb-4">Stuck on your focus task? Ask your mentor for guidance.</p>
-                <Link href="/dashboard/mentor-chat" className="text-xs font-700 text-indigo-600 flex items-center gap-1 hover:underline">
-                  Chat with Mentor <ChevronRight size={14} />
+                <Link href="/dashboard/mentor-direct" className="text-xs font-700 text-indigo-600 flex items-center gap-1 hover:underline">
+                  Chat with human Mentor <ChevronRight size={14} />
                 </Link>
              </div>
           </div>
