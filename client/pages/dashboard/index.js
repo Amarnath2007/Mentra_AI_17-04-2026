@@ -8,7 +8,7 @@ import {
   BookOpen, Brain, MessageSquare, Trophy, Zap, TrendingUp,
   ChevronRight, Star, Clock, Target, Flame, Bot, AlertTriangle,
   CheckCircle, Rocket, Map, Lightbulb, Compass, Sparkles, Send, HelpCircle, RotateCw, SkipForward,
-  Circle, ArrowRight
+  Circle, ArrowRight, Play
 } from 'lucide-react';
 
 const StatCard = ({ icon: Icon, label, value, sub, color, href }) => {
@@ -157,28 +157,20 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Today's Focus (Next Action) */}
-          <div className="lg:col-span-2 glass rounded-2xl p-8 relative overflow-hidden bg-white dark:bg-slate-900 border border-blue-100 dark:border-blue-900/40 shadow-xl shadow-blue-500/5">
           {/* Today's Tasks (from Journey) */}
-          <div className="lg:col-span-2 glass rounded-2xl p-8 relative overflow-hidden bg-white border border-blue-100 shadow-xl shadow-blue-500/5">
+          <div className="lg:col-span-2 glass rounded-2xl p-8 relative overflow-hidden bg-white dark:bg-slate-900 border border-blue-100 dark:border-blue-900/40 shadow-xl shadow-blue-500/5">
             <div className="absolute top-0 right-0 p-8 text-blue-100 opacity-20 pointer-events-none">
               <Rocket size={120} />
             </div>
             
             <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200">
-                  <Target size={20} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-700 dark:text-white" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Today's Focus</h3>
-                  <p className="text-xs text-slate-400 font-500">INDIVIDUAL ACTION ITEM</p>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200">
                     <Target size={20} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-700" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Today's Tasks</h3>
+                    <h3 className="text-xl font-700 dark:text-white" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Today's Tasks</h3>
                     <p className="text-xs text-slate-400 font-500">
                       {hasJourney ? `Day ${currentDay} · ${journeyProgress}% complete` : 'YOUR DAILY FOCUS'}
                     </p>
@@ -196,67 +188,19 @@ export default function Dashboard() {
                     <div className="skeleton h-8 w-3/4 rounded-lg" />
                     <div className="skeleton h-20 w-full rounded-xl" />
                  </div>
-              ) : nextAction ? (
-                <div className="space-y-6 animate-slide-up">
-                  <div>
-                    <h4 className="text-2xl font-700 text-slate-800 dark:text-slate-100 mb-3 leading-tight" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>
-                      {nextAction.action}
-                    </h4>
-                    <div className="flex items-center gap-4 text-xs font-600">
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                        <Clock size={14} />
-                        {nextAction.estimated_time || '30 mins'}
-                      </div>
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/40">
-                        <Sparkles size={14} />
-                        AI Curated
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-100 dark:border-slate-800">
-                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed italic italic">
-                      " {nextAction.reason} "
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-4 pt-4">
-                    <button 
-                      onClick={() => handleActionUpdate('completed')}
-                      disabled={updatingAction}
-                      className="px-6 py-3 bg-blue-600 text-white rounded-xl font-600 text-sm shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all flex items-center gap-2 group"
-                    >
-                      <CheckCircle size={18} className="group-hover:scale-110 transition-transform" />
-                      Mark as Completed
-                    </button>
-                    <button 
-                      onClick={() => handleActionUpdate('skipped')}
-                      disabled={updatingAction}
-                      className="px-6 py-3 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl font-600 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center gap-2"
-                    >
-                      <SkipForward size={18} />
-                      Skip for Now
-                    </button>
-                    <button 
-                      onClick={fetchData} 
-                      className="ml-auto p-3 text-slate-400 hover:text-blue-600 transition-colors"
-                      title="Regenerate"
-                    >
-                      <RotateCw size={18} className={loadingProfile ? 'animate-spin' : ''} />
-                    </button>
               ) : hasJourney && todayTasks.length > 0 ? (
                 <div className="space-y-3 animate-slide-up">
                   {/* Journey goal context */}
-                  <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100 mb-4 flex items-center gap-3">
+                  <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-xl p-3 border border-blue-100 dark:border-blue-900/30 mb-4 flex items-center gap-3">
                     <Map size={16} className="text-blue-500 flex-shrink-0" />
-                    <p className="text-xs text-blue-600 font-500">
+                    <p className="text-xs text-blue-600 dark:text-blue-400 font-500">
                       Journey: <span className="font-700" style={{ fontWeight: 700 }}>{todayData.journey.goal}</span>
                     </p>
                   </div>
 
                   {/* Progress bar */}
                   <div className="mb-4">
-                    <div className="bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div className="bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
                       <div className="h-full rounded-full transition-all duration-500"
                         style={{ width: `${journeyProgress}%`, background: journeyProgress === 100 ? '#22c55e' : 'linear-gradient(90deg,#1d4ed8,#3b82f6)' }} />
                     </div>
@@ -264,15 +208,15 @@ export default function Dashboard() {
 
                   {/* Today's task cards */}
                   {todayTasks.map(task => (
-                    <div key={task.id} className="rounded-xl border p-5 transition-all bg-white border-blue-200 hover:shadow-md">
+                    <div key={task.id} className="rounded-xl border p-5 transition-all bg-white dark:bg-slate-800 border-blue-200 dark:border-blue-900/40 hover:shadow-md">
                       <div className="flex items-start gap-3">
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-100 text-blue-600">
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
                           <Target size={18} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[10px] font-700 text-blue-500 uppercase tracking-widest mb-1" style={{ fontWeight: 700 }}>Day {task.day_number} · {task.topic || 'Today\'s Task'}</p>
-                          <h4 className="text-sm font-600 text-slate-800 mb-1" style={{ fontWeight: 600 }}>{task.title}</h4>
-                          <p className="text-xs text-slate-500 leading-relaxed mb-3">{task.description}</p>
+                          <h4 className="text-sm font-600 text-slate-800 dark:text-slate-200 mb-1" style={{ fontWeight: 600 }}>{task.title}</h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3">{task.description}</p>
                           <Link href="/dashboard/journey"
                             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-600 text-white shadow-sm"
                             style={{ background: 'linear-gradient(135deg,#1d4ed8,#2563eb)' }}>
@@ -286,7 +230,7 @@ export default function Dashboard() {
               ) : hasJourney && todayTasks.length === 0 ? (
                 <div className="text-center py-10">
                   <div className="text-4xl mb-3">🎉</div>
-                  <p className="text-sm font-600 text-slate-600 mb-1" style={{ fontWeight: 600 }}>No tasks for today</p>
+                  <p className="text-sm font-600 text-slate-600 dark:text-slate-300 mb-1" style={{ fontWeight: 600 }}>No tasks for today</p>
                   <p className="text-xs text-slate-400 mb-4">Check your full journey for upcoming tasks.</p>
                   <Link href="/dashboard/journey" className="btn-primary text-sm mx-auto">
                     <Map size={14} /> View Journey
@@ -296,8 +240,8 @@ export default function Dashboard() {
                 /* No journey started */
                 <div className="text-center py-10">
                   <div className="text-5xl mb-4">🚀</div>
-                  <h4 className="text-lg font-700 text-slate-700 mb-2" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Start Your Learning Journey</h4>
-                  <p className="text-sm text-slate-500 mb-5">Set a goal and let AI create a personalized day-by-day path for you.</p>
+                  <h4 className="text-lg font-700 text-slate-700 dark:text-slate-200 mb-2" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Start Your Learning Journey</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-5">Set a goal and let AI create a personalized day-by-day path for you.</p>
                   <Link href="/dashboard/journey"
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-600 text-white shadow-lg shadow-blue-200"
                     style={{ background: 'linear-gradient(135deg,#1d4ed8,#2563eb)' }}>
