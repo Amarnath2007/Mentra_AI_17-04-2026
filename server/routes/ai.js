@@ -56,7 +56,7 @@ const callAIChat = async (messages, maxTokens = 1200) => {
       model,
       messages,
       max_tokens: maxTokens,
-      temperature: 0.1,
+      temperature: 0.5,
     });
     return response.choices[0]?.message?.content;
   } catch (err) {
@@ -184,21 +184,20 @@ router.post('/mentor-chat', auth, async (req, res) => {
       }
     }
 
-    const systemPrompt = `ACT AS A CURT TASK BOT. 
-RULES:
-1. MAX 15 WORDS TOTAL.
-2. NO GREETINGS. 
-3. NO INTROS. 
-4. NO FORMATTING.
-5. JUST THE ANSWER.
+    const systemPrompt = `You are Mentra, a personalized AI mentor. 
+GUIDELINES:
+1. Be direct and actionable.
+2. By default, keep responses concise (1-3 paragraphs).
+3. If the user asks for more detail or a specific length, fulfill their request accurately.
+4. No excessive pleasantries or fluff.
 ${userContext}`;
 
     const messages = [
       { role: 'system', content: systemPrompt },
-      { role: 'user', content: `${message} (RESPOND IN MAX 10 WORDS. NO INTRO.)` },
+      { role: 'user', content: message },
     ];
 
-    const reply = await callAIChat(messages, 50); // Hard limit to 50 tokens
+    const reply = await callAIChat(messages, 800); 
 
     if (!reply) {
       return res.json({ 
@@ -471,132 +470,5 @@ function getDefaultQuiz(topic) {
     ],
   };
 }
-// ─── GET /ai/daily-insights ────────────────────────────────────────────────────
-// Generates or fetches today's insights
-router.get('/daily-insights', auth, async (req, res) => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-
-    if (supabase) {
-      // 1. Check if today's insight already exists
-      const { data: existing } = await supabase
-        .from('daily_insights')
-        .select('*')
-        .eq('user_id', req.user.id)
-        .eq('generate_date', today)
-        .maybeSingle();
-
-      if (existing) {
-        return res.json({ insight: existing });
-      }
-
-      // 2. Fetch user context & history
-      const { data: userContext } = await supabase.from('users').select('*').eq('id', req.user.id).single();
-      const { data: history } = await supabase.from('user_activity').select('question, answer').eq('user_id', req.user.id).order('created_at', { ascending: false }).limit(5);
-
-      const isNewUser = !history || history.length === 0;
-
-      const systemPrompt = `You are a Mentra Expert Knowledge Curator. Your task is to generate 3 to 5 highly specific, surprising, and engaging fun facts.
-CRITICAL: The facts MUST be directly related to the user's interests and field: ${(userContext?.interests || []).join(', ')}. 
-Avoid extremely common facts (like the first computer bug moth). Focus on industry-specific breakthroughs, historical oddities in their field, or surprising statistics.
-
-Output EXACTLY this JSON structure:
-{
-  "facts": ["Specific personalized fact 1", "Specific personalized fact 2", "Specific personalized fact 3"]
-}
-Keep each fact concise (1-2 sentences). Return ONLY valid JSON.`;
-
-      let userMsg = isNewUser
-        ? `Generate 5 surprising industry facts for a professional in the field of: ${(userContext?.interests || []).join(', ')}.`
-        : `User: ${userContext?.name}. Field/Interests: ${(userContext?.interests || []).join(', ')}. Previous interaction history suggests they like deep insights. Generate 5 new specific fun facts for them.`;
-
-      const aiResponse = await callAI(systemPrompt, userMsg, true, 1000);
-      let insightData;
-      try { 
-        insightData = JSON.parse(aiResponse); 
-        if (!insightData.facts || !Array.isArray(insightData.facts)) throw new Error('Invalid format');
-      } catch(e) { 
-        // Targeted fallback based on user interests if AI fails JSON
-        const primaryInterest = (userContext?.interests || [])[0] || 'Technology';
-        insightData = {
-          facts: [
-            `In ${primaryInterest}, breakthroughs often happen in cycles of 18 months, similar to Moore's Law.`,
-            `The earliest pioneers of ${primaryInterest} often came from diverse backgrounds like philosophy and arts.`,
-            `Experts estimate that 90% of the data in ${primaryInterest} was created in just the last two years.`,
-            `The most successful practitioners in ${primaryInterest} attribute their success to 'interdisciplinary thinking'.`,
-            `A surprising number of ${primaryInterest} concepts were originally proposed in science fiction novels from the 1960s.`
-          ]
-        };
-      }
-
-      // Store facts as a single string joined by newline for the DB
-      const combinedFacts = insightData.facts.join('\n');
-
-      // 3. Save to database
-      const { data: inserted } = await supabase.from('daily_insights').insert([{
-        user_id: req.user.id,
-        generate_date: today,
-        fact: combinedFacts,
-        // (Other fields like question, tip, task are now empty or unused)
-      }]).select().single();
-
-      return res.json({ insight: { ...inserted, facts: insightData.facts } });
-    }
-
-    // Fallback if no DB
-    res.json({ insight: {
-      fact: "The first computer bug was an actual moth.",
-      question: "What's a tool you want to learn?",
-      tip: "Consistency > Intensity.",
-      task: "Read one article today.",
-      answered: false
-    }});
-  } catch (err) {
-    console.error('daily-insights error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ─── POST /ai/daily-insights/answer ──────────────────────────────────────────
-router.post('/daily-insights/answer', auth, async (req, res) => {
-  try {
-    const { insightId, question, answer } = req.body;
-    
-    if (supabase) {
-      // 1. Record activity
-      await supabase.from('user_activity').insert([{
-        user_id: req.user.id,
-        insight_id: insightId,
-        question,
-        answer
-      }]);
-
-      // 2. Mark insight as answered
-      await supabase.from('daily_insights').update({ answered: true }).eq('id', insightId);
-      
-      // 3. (Optional) Run a background update to the AI profile or user interests based on answer
-      // For now, we just save the activity.
-
-      return res.json({ success: true });
-    }
-    res.json({ success: true });
-  } catch(err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ─── POST /ai/daily-insights/refresh ──────────────────────────────────────────
-// Force regenerates today's insights
-router.post('/daily-insights/refresh', auth, async (req, res) => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    if (supabase) {
-      await supabase.from('daily_insights').delete().eq('user_id', req.user.id).eq('generate_date', today);
-    }
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 module.exports = router;

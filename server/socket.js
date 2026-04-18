@@ -84,6 +84,44 @@ const setupSocket = (io) => {
       socket.to(room).emit('typing:stop', { user: user.name, room });
     });
 
+    // ─── Community Rooms ──────────────────────────────────────────────
+    socket.on('community:join', ({ communityId }) => {
+      const room = `community:${communityId}`;
+      socket.join(room);
+      console.log(`  → ${user.name} joined community room: ${room}`);
+    });
+
+    socket.on('community:leave', ({ communityId }) => {
+      socket.leave(`community:${communityId}`);
+    });
+
+    socket.on('community:send', async ({ communityId, content }) => {
+      if (!communityId || !content?.trim()) return;
+      const msg = {
+        id: Date.now().toString(),
+        community_id: communityId,
+        user_id: user.id,
+        user_name: user.name,
+        content: content.trim(),
+        created_at: new Date(),
+      };
+
+      try {
+        const supabase = require('./supabase');
+        if (supabase) {
+          const { data: saved } = await supabase.from('community_messages').insert([{
+            community_id: communityId,
+            user_id: user.id,
+            user_name: user.name,
+            content: content.trim(),
+          }]).select().single();
+          if (saved) Object.assign(msg, saved);
+        }
+      } catch(e) { console.error('community msg save error:', e.message); }
+
+      io.to(`community:${communityId}`).emit('community:message', msg);
+    });
+
     // Direct message room helper
     socket.on('dm:join', ({ targetUserId }) => {
       const dmRoom = [user.id, targetUserId].sort().join('__dm__');
