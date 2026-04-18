@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import MentorLayout from '../../components/mentor/MentorLayout';
 import { getMentorAnalytics } from '../../lib/api';
 import { BarChart2, TrendingUp, AlertTriangle, Lightbulb, Users, Clock, Target, ArrowRight, Zap, Sparkles } from 'lucide-react';
 
 const TrendBar = ({ label, value, max, color }) => (
   <div className="space-y-2">
-    <div className="flex justify-between text-[11px] font-700 uppercase tracking-widest text-slate-500">
+    <div className="flex justify-between text-[11px] font-700 uppercase tracking-widest text-slate-500 dark:text-slate-400">
       <span>{label}</span>
       <span style={{ color }}>{value}%</span>
     </div>
-    <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+    <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
       <div 
         className="h-full rounded-full transition-all duration-1000 ease-out" 
         style={{ width: `${(value/max)*100}%`, backgroundColor: color, boxShadow: `0 0 12px ${color}33` }} 
@@ -53,35 +53,35 @@ export default function MentorAnalytics() {
         
         {/* Top Growth Card */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-           <div className="lg:col-span-2 bg-[#F9FAFB] p-10 rounded-[32px] border border-[#E5E7EB] relative overflow-hidden flex flex-col justify-between min-h-[300px]">
+           <div className="lg:col-span-2 bg-[#F9FAFB] dark:bg-slate-800/60 p-10 rounded-[32px] border border-[#E5E7EB] dark:border-slate-700 relative overflow-hidden flex flex-col justify-between min-h-[300px]">
               <div className="absolute top-0 right-0 p-10 text-[#0A66C2] opacity-5 pointer-events-none">
                  <TrendingUp size={240} />
               </div>
               <div>
                  <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-white rounded-lg border border-[#E5E7EB] text-[#0A66C2] shadow-sm">
+                    <div className="p-2 bg-white dark:bg-slate-900 rounded-lg border border-[#E5E7EB] dark:border-slate-700 text-[#0A66C2] shadow-sm">
                        <TrendingUp size={18} />
                     </div>
                     <h3 className="text-sm font-800 uppercase tracking-[0.2em] text-[#0A66C2]">Growth Insights</h3>
                  </div>
-                 <h2 className="text-3xl font-700 text-[#111827] max-w-md leading-tight" style={{ fontFamily: 'Sora, sans-serif' }}>
+                 <h2 className="text-3xl font-700 text-[#111827] dark:text-white max-w-md leading-tight" style={{ fontFamily: 'Sora, sans-serif' }}>
                    Average student progress has increased by <span className="text-[#00C4B4]">24%</span> this month.
                  </h2>
               </div>
               <div className="flex flex-wrap gap-8 mt-10">
                  <div>
-                    <p className="text-2xl font-700 text-[#111827]">86%</p>
-                    <p className="text-[10px] font-700 text-slate-500 uppercase tracking-widest mt-1">Retention Rate</p>
+                    <p className="text-2xl font-700 text-[#111827] dark:text-white">86%</p>
+                    <p className="text-[10px] font-700 text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">Retention Rate</p>
                  </div>
                  <div className="w-px h-10 bg-[#E5E7EB]" />
                  <div>
-                    <p className="text-2xl font-700 text-[#111827]">4.8/5</p>
-                    <p className="text-[10px] font-700 text-slate-500 uppercase tracking-widest mt-1">Average Rating</p>
+                    <p className="text-2xl font-700 text-[#111827] dark:text-white">4.8/5</p>
+                    <p className="text-[10px] font-700 text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">Average Rating</p>
                  </div>
                  <div className="w-px h-10 bg-[#E5E7EB]" />
                  <div>
-                    <p className="text-2xl font-700 text-[#111827]">92%</p>
-                    <p className="text-[10px] font-700 text-slate-500 uppercase tracking-widest mt-1">Task Completion</p>
+                    <p className="text-2xl font-700 text-[#111827] dark:text-white">92%</p>
+                    <p className="text-[10px] font-700 text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">Task Completion</p>
                  </div>
               </div>
            </div>
@@ -104,9 +104,9 @@ export default function MentorAnalytics() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
            
            {/* Section: Weak Topics */}
-           <div className="bg-white p-10 rounded-[32px] border border-[#E5E7EB] shadow-sm">
+           <div className="bg-white dark:bg-slate-900 p-10 rounded-[32px] border border-[#E5E7EB] dark:border-slate-700 shadow-sm">
               <div className="flex items-center justify-between mb-10">
-                 <h3 className="text-sm font-800 text-[#111827] uppercase tracking-widest flex items-center gap-3">
+                 <h3 className="text-sm font-800 text-[#111827] dark:text-white uppercase tracking-widest flex items-center gap-3">
                    <AlertTriangle size={18} className="text-[#F59E0B]" />
                    Students Struggling With
                  </h3>
@@ -123,30 +123,30 @@ export default function MentorAnalytics() {
                     />
                  ))}
               </div>
-              <div className="mt-12 p-6 bg-[#F9FAFB] rounded-2xl border border-[#E5E7EB] flex items-start gap-4">
-                 <div className="w-10 h-10 rounded-xl bg-white border border-[#E5E7EB] flex items-center justify-center shrink-0">
+              <div className="mt-12 p-6 bg-[#F9FAFB] dark:bg-slate-800/60 rounded-2xl border border-[#E5E7EB] dark:border-slate-700 flex items-start gap-4">
+                 <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-[#E5E7EB] dark:border-slate-700 flex items-center justify-center shrink-0">
                     <Lightbulb size={20} className="text-[#F59E0B]" />
                  </div>
-                 <p className="text-xs text-slate-600 leading-relaxed font-500 italic">
+                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-500 italic">
                    "Recommendation: Schedule a group session on **{data.weakTopics[0].topic}** this Wednesday to clear common misconceptions."
                  </p>
               </div>
            </div>
 
            {/* Section: Activity Insights */}
-           <div className="bg-white p-10 rounded-[32px] border border-[#E5E7EB] shadow-sm">
-              <h3 className="text-sm font-800 text-[#111827] uppercase tracking-widest flex items-center gap-3 mb-10">
+           <div className="bg-white dark:bg-slate-900 p-10 rounded-[32px] border border-[#E5E7EB] dark:border-slate-700 shadow-sm">
+              <h3 className="text-sm font-800 text-[#111827] dark:text-white uppercase tracking-widest flex items-center gap-3 mb-10">
                 <BarChart2 size={18} className="text-[#00C4B4]" />
                 Actionable Insights
               </h3>
               <div className="space-y-4">
                  {data.insights.map((insight, i) => (
                     <div key={i} className="flex gap-4 group p-1 transition-transform hover:translate-x-1">
-                       <div className="w-10 h-10 rounded-2xl bg-[#F9FAFB] border border-[#E5E7EB] flex items-center justify-center shrink-0 group-hover:bg-[#0A66C2]/5 transition-colors">
+                       <div className="w-10 h-10 rounded-2xl bg-[#F9FAFB] dark:bg-slate-800/60 border border-[#E5E7EB] dark:border-slate-700 flex items-center justify-center shrink-0 group-hover:bg-[#0A66C2]/5 transition-colors">
                           <Zap size={16} className="text-[#00C4B4]" />
                        </div>
                        <div className="flex-1 py-1">
-                          <p className="text-sm text-slate-700 font-500 leading-snug">{insight}</p>
+                          <p className="text-sm text-slate-700 dark:text-slate-300 font-500 leading-snug">{insight}</p>
                        </div>
                     </div>
                  ))}

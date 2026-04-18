@@ -7,6 +7,7 @@ import {
   Trophy, Bell, LogOut, Menu, X, ChevronRight, Zap,
   Users, Settings, Sparkles, Compass
 } from 'lucide-react';
+import ThemeToggle from '../ThemeToggle';
 
 const studentNavItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -49,14 +50,14 @@ export default function DashboardLayout({ children, title = 'Dashboard' }) {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-20 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* ── Sidebar ── */}
-      <aside className={`fixed top-0 left-0 h-full z-30 w-64 flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} bg-white border-r border-slate-200`}>
+      <aside className={`fixed top-0 left-0 h-full z-30 w-64 flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800`}>
 
         {/* Logo */}
         <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: '1px solid rgba(37,99,235,0.1)' }}>
@@ -72,7 +73,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }) {
         </div>
 
         {/* User card */}
-        <div className="mx-4 mt-4 p-3 rounded-xl bg-slate-50 border border-slate-100">
+        <div className="mx-4 mt-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-700 flex-shrink-0"
               style={{ background: 'linear-gradient(135deg,#1d4ed8,#fb923c)', fontWeight: 700, fontFamily: 'Sora,sans-serif' }}>
@@ -119,7 +120,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }) {
       {/* ── Main content ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="relative z-40 flex items-center justify-between px-6 py-4 flex-shrink-0 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <header className="relative z-40 flex items-center justify-between px-6 py-4 flex-shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-4">
             <button className="lg:hidden text-slate-400 hover:text-slate-800" onClick={() => setSidebarOpen(true)}>
               <Menu size={20} />
@@ -133,6 +134,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }) {
           </div>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
 
             {/* Notifications */}
             <div className="relative">
@@ -148,7 +150,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }) {
               </button>
 
               {notifOpen && (
-                <div className="absolute right-0 top-12 w-80 rounded-xl shadow-lg z-50 overflow-hidden bg-white border border-slate-200">
+                <div className="absolute right-0 top-12 w-80 rounded-xl shadow-lg z-50 overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
                     <p className="text-sm font-600" style={{ fontWeight: 600 }}>Notifications</p>
                     <button onClick={markAllRead} className="text-xs" style={{ color: '#3b82f6' }}>Mark all read</button>
@@ -176,7 +178,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }) {
               </button>
 
               {profileOpen && (
-                <div className="absolute right-0 top-12 w-48 rounded-xl shadow-lg z-50 overflow-hidden bg-white border border-slate-200 py-1">
+                <div className="absolute right-0 top-12 w-48 rounded-xl shadow-lg z-50 overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-1">
                   <div className="px-4 py-2 border-b border-slate-100 mb-1">
                     <p className="text-sm font-600 truncate" style={{ fontWeight: 600 }}>{user.name}</p>
                     <p className="text-xs text-slate-500 truncate">{user.email}</p>

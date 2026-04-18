@@ -63,8 +63,7 @@ export default function SettingsPage() {
             <div className="flex gap-3">
               {['beginner', 'intermediate', 'advanced'].map(lvl => (
                 <button key={lvl} onClick={() => setForm(p => ({ ...p, skillLevel: lvl }))}
-                  className={`flex-1 py-2 rounded-xl text-sm capitalize transition-all border ${form.skillLevel === lvl ? 'text-brand-400' : 'text-gray-400 hover:text-gray-200'}`}
-                  style={{ background: form.skillLevel === lvl ? 'rgba(37,99,235,0.1)' : '#f8fafc', border: `1px solid ${form.skillLevel === lvl ? 'rgba(37,99,235,0.4)' : '#e2e8f0'}`, color: form.skillLevel === lvl ? '#3b82f6' : '#64748b', fontWeight: form.skillLevel === lvl ? 600 : 500 }}>
+                  className={`flex-1 py-2 rounded-xl text-sm capitalize transition-all border ${form.skillLevel === lvl ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 dark:border-blue-700 text-blue-500 font-600' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-500'}`}>
                   {lvl}
                 </button>
               ))}
@@ -76,8 +75,7 @@ export default function SettingsPage() {
             <div className="flex flex-wrap gap-2">
               {SKILL_OPTIONS.map(s => (
                 <button key={s} onClick={() => toggle('skills', s)}
-                  className="text-xs py-1.5 px-3 rounded-full transition-all"
-                  style={{ background: form.skills.includes(s) ? 'rgba(37,99,235,0.1)' : '#f8fafc', border: `1px solid ${form.skills.includes(s) ? 'rgba(37,99,235,0.5)' : '#e2e8f0'}`, color: form.skills.includes(s) ? '#3b82f6' : '#64748b' }}>
+                  className={`text-xs py-1.5 px-3 rounded-full transition-all border ${form.skills.includes(s) ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 dark:border-blue-700 text-blue-500' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400'}`}>
                   {s}
                 </button>
               ))}
@@ -96,17 +94,17 @@ export default function SettingsPage() {
             <GraduationCap size={16} style={{ color: '#a78bfa' }} /> Account
           </h3>
           <div className="text-sm space-y-2">
-            <div className="flex justify-between py-2 border-b border-slate-100">
-              <span className="text-slate-500">Email</span>
-              <span className="text-slate-800">{user?.email}</span>
+            <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700">
+              <span className="text-slate-500 dark:text-slate-400">Email</span>
+              <span className="text-slate-800 dark:text-slate-100">{user?.email}</span>
             </div>
-            <div className="flex justify-between py-2 border-b border-slate-100">
-              <span className="text-slate-500">Role</span>
+            <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700">
+              <span className="text-slate-500 dark:text-slate-400">Role</span>
               <span className={`badge ${user?.role === 'mentor' ? 'badge-mentor' : 'badge-brand'}`}>{user?.role}</span>
             </div>
             <div className="flex justify-between py-2">
-              <span className="text-slate-500">Member since</span>
-              <span className="text-slate-800">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Today'}</span>
+              <span className="text-slate-500 dark:text-slate-400">Member since</span>
+              <span className="text-slate-800 dark:text-slate-100">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Today'}</span>
             </div>
           </div>
         </div>

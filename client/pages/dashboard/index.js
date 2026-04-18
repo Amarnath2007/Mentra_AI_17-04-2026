@@ -91,14 +91,14 @@ export default function Dashboard() {
         <div className="relative overflow-hidden rounded-2xl p-7" style={{ background: 'linear-gradient(135deg,rgba(37,99,235,0.12),rgba(37,99,235,0.04))', border: '1px solid rgba(37,99,235,0.15)' }}>
           <div className="absolute right-0 top-0 w-64 h-64 opacity-10 pointer-events-none" style={{ background: 'radial-gradient(circle, #2563eb 0%, transparent 70%)' }} />
           <div className="relative z-10">
-            <p className="text-sm mb-1 text-slate-500">{greeting()},</p>
-            <h2 className="text-3xl font-700 mb-2" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>{user.name} 👋</h2>
+            <p className="text-sm mb-1 text-slate-500 dark:text-slate-400">{greeting()},</p>
+            <h2 className="text-3xl font-700 mb-2 dark:text-white" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>{user.name} 👋</h2>
             <div className="flex items-center gap-3 mb-3">
               <span className="badge" style={{ background: `${levelColor}15`, color: levelColor, border: `1px solid ${levelColor}30`, textTransform: 'capitalize' }}>
                 {level} Level
               </span>
               {(user.interests || []).length > 0 && (
-                <span className="text-sm text-slate-500">Focusing on: {user.interests.slice(0, 3).join(', ')}</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">Focusing on: {user.interests.slice(0, 3).join(', ')}</span>
               )}
             </div>
             <div className="flex flex-wrap gap-3 mt-4">
@@ -121,7 +121,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Today's Focus (Next Action) */}
-          <div className="lg:col-span-2 glass rounded-2xl p-8 relative overflow-hidden bg-white border border-blue-100 shadow-xl shadow-blue-500/5">
+          <div className="lg:col-span-2 glass rounded-2xl p-8 relative overflow-hidden bg-white dark:bg-slate-900 border border-blue-100 dark:border-blue-900/40 shadow-xl shadow-blue-500/5">
             <div className="absolute top-0 right-0 p-8 text-blue-100 opacity-20 pointer-events-none">
               <Rocket size={120} />
             </div>
@@ -132,7 +132,7 @@ export default function Dashboard() {
                   <Target size={20} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-700" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Today's Focus</h3>
+                  <h3 className="text-xl font-700 dark:text-white" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Today's Focus</h3>
                   <p className="text-xs text-slate-400 font-500">INDIVIDUAL ACTION ITEM</p>
                 </div>
               </div>
@@ -145,23 +145,23 @@ export default function Dashboard() {
               ) : nextAction ? (
                 <div className="space-y-6 animate-slide-up">
                   <div>
-                    <h4 className="text-2xl font-700 text-slate-800 mb-3 leading-tight" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>
+                    <h4 className="text-2xl font-700 text-slate-800 dark:text-slate-100 mb-3 leading-tight" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>
                       {nextAction.action}
                     </h4>
                     <div className="flex items-center gap-4 text-xs font-600">
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                         <Clock size={14} />
                         {nextAction.estimated_time || '30 mins'}
                       </div>
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/40">
                         <Sparkles size={14} />
                         AI Curated
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
-                    <p className="text-slate-600 text-sm leading-relaxed italic italic">
+                  <div className="bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-100 dark:border-slate-800">
+                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed italic italic">
                       " {nextAction.reason} "
                     </p>
                   </div>
@@ -178,7 +178,7 @@ export default function Dashboard() {
                     <button 
                       onClick={() => handleActionUpdate('skipped')}
                       disabled={updatingAction}
-                      className="px-6 py-3 bg-white text-slate-600 border border-slate-200 rounded-xl font-600 text-sm hover:bg-slate-50 transition-all flex items-center gap-2"
+                      className="px-6 py-3 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl font-600 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center gap-2"
                     >
                       <SkipForward size={18} />
                       Skip for Now
@@ -205,16 +205,16 @@ export default function Dashboard() {
 
           {/* AI Suggestions / Sidebar content */}
           <div className="space-y-6">
-             <div className="glass rounded-2xl p-6 border border-slate-100 bg-white shadow-sm">
+             <div className="glass rounded-2xl p-6 border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
                   <TrendingUp size={16} className="text-blue-500" />
-                  <h4 className="font-600 text-sm" style={{ fontWeight: 600 }}>Next Steps</h4>
+                  <h4 className="font-600 text-sm dark:text-white" style={{ fontWeight: 600 }}>Next Steps</h4>
                 </div>
                 <div className="space-y-3">
                   {recommendations.length > 0 ? recommendations.map((rec, i) => (
-                    <div key={i} className="p-3 rounded-xl bg-orange-50/50 border border-orange-100 group hover:bg-orange-50 transition-colors cursor-pointer">
-                      <p className="text-[10px] text-orange-600 font-700 uppercase tracking-widest mb-1">{rec.type || 'Suggestion'}</p>
-                      <p className="text-sm font-600 text-slate-800" style={{ fontWeight: 600 }}>{rec.title}</p>
+                    <div key={i} className="p-3 rounded-xl bg-orange-50/50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30 group hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors cursor-pointer">
+                      <p className="text-[10px] text-orange-600 dark:text-orange-400 font-700 uppercase tracking-widest mb-1">{rec.type || 'Suggestion'}</p>
+                      <p className="text-sm font-600 text-slate-800 dark:text-slate-200" style={{ fontWeight: 600 }}>{rec.title}</p>
                     </div>
                   )) : (
                     <div className="skeleton h-20 w-full rounded-xl" />
@@ -222,21 +222,21 @@ export default function Dashboard() {
                 </div>
              </div>
              
-             <div className="glass rounded-2xl p-6 border border-slate-100 bg-white shadow-sm">
+             <div className="glass rounded-2xl p-6 border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
                   <HelpCircle size={16} className="text-indigo-500" />
-                  <h4 className="font-600 text-sm" style={{ fontWeight: 600 }}>Need Help?</h4>
+                  <h4 className="font-600 text-sm dark:text-white" style={{ fontWeight: 600 }}>Need Help?</h4>
                 </div>
-                <p className="text-xs text-slate-500 leading-relaxed mb-4">Stuck on your focus task? Ask your mentor for guidance.</p>
-                <Link href="/dashboard/mentor-direct" className="text-xs font-700 text-indigo-600 flex items-center gap-1 hover:underline">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">Stuck on your focus task? Ask your mentor for guidance.</p>
+                <Link href="/dashboard/mentor-direct" className="text-xs font-700 text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline">
                   Chat with human Mentor <ChevronRight size={14} />
                 </Link>
              </div>
           </div>
         </div>
         {/* Quick Actions */}
-        <div className="glass rounded-2xl p-6 shadow-sm border border-slate-100 bg-white">
-          <h3 className="font-600 text-base mb-5 flex items-center gap-2" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600 }}>
+        <div className="glass rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <h3 className="font-600 text-base mb-5 flex items-center gap-2 dark:text-white" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600 }}>
             <Target size={18} style={{ color: '#fb923c' }} />
             Quick Actions
           </h3>
@@ -247,13 +247,13 @@ export default function Dashboard() {
               { href: '/dashboard/chat', icon: MessageSquare, label: 'Community', sub: 'Join the discussion', color: '#a78bfa' },
             ].map(({ href, icon: Icon, label, sub, color }) => (
               <Link key={href} href={href}
-                className="flex items-center gap-4 p-4 rounded-xl transition-all hover:bg-slate-50 group border border-slate-100 bg-white shadow-sm hover:shadow-md">
+                className="flex items-center gap-4 p-4 rounded-xl transition-all hover:bg-slate-50 dark:hover:bg-slate-800 group border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${color}15` }}>
                   <Icon size={18} style={{ color }} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-700 text-slate-800" style={{ fontWeight: 700 }}>{label}</p>
-                  <p className="text-xs text-slate-500">{sub}</p>
+                  <p className="text-sm font-700 text-slate-800 dark:text-slate-100" style={{ fontWeight: 700 }}>{label}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{sub}</p>
                 </div>
               </Link>
             ))}

@@ -29,7 +29,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-slate-50">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-slate-50 dark:bg-slate-950">
       {/* Bg glow */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #1d4ed8 0%, transparent 70%)', filter: 'blur(80px)' }} />
@@ -45,8 +45,8 @@ export default function Login() {
             </div>
             <span className="text-2xl font-700 gradient-text" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Mentra AI</span>
           </div>
-          <h1 className="text-2xl font-700 mb-1" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Welcome back</h1>
-          <p className="text-sm text-slate-500">Sign in to continue learning</p>
+          <h1 className="text-2xl font-700 mb-1 dark:text-white" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Welcome back</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Sign in to continue learning</p>
         </div>
 
         {/* Demo buttons */}
@@ -69,7 +69,7 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-500 mb-1.5 text-slate-700">Email</label>
+              <label className="block text-sm font-500 mb-1.5 text-slate-700 dark:text-slate-300">Email</label>
               <div className="relative">
                 <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#94a3b8' }} />
                 <input type="email" className="input-field pl-10" placeholder="you@example.com"
@@ -78,7 +78,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-500 mb-1.5 text-slate-700">Password</label>
+              <label className="block text-sm font-500 mb-1.5 text-slate-700 dark:text-slate-300">Password</label>
               <div className="relative">
                 <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#94a3b8' }} />
                 <input type={showPw ? 'text' : 'password'} className="input-field pl-10 pr-10" placeholder="••••••••"
@@ -101,7 +101,7 @@ export default function Login() {
           </form>
         </div>
 
-        <p className="text-center mt-4 text-sm text-slate-500">
+        <p className="text-center mt-4 text-sm text-slate-500 dark:text-slate-400">
           Don&apos;t have an account?{' '}
           <Link href="/signup" style={{ color: '#3b82f6' }} className="font-500 hover:underline">Create one</Link>
         </p>

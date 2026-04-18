@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../lib/auth';
 import { useSocket } from '../../lib/socket';
@@ -141,26 +141,26 @@ export default function StudentMentorChat() {
         
         {/* Sidebar: Mentor List */}
         <div className="w-72 flex-shrink-0 flex flex-col gap-4">
-           <Link href="/dashboard" className="flex items-center gap-2 text-xs font-700 text-slate-500 hover:text-[#0A66C2] transition-colors mb-2">
+           <Link href="/dashboard" className="flex items-center gap-2 text-xs font-700 text-slate-500 dark:text-slate-400 hover:text-[#0A66C2] transition-colors mb-2">
               <ChevronLeft size={14} /> Back to Dashboard
            </Link>
            
-           <div className="glass rounded-2xl flex flex-col overflow-hidden flex-1 border border-slate-100">
+           <div className="glass rounded-2xl flex flex-col overflow-hidden flex-1 border border-slate-100 dark:border-slate-700">
               <div className="p-5 border-b border-slate-50">
-                 <h3 className="text-sm font-700 text-slate-800" style={{ fontWeight: 700 }}>Your Mentors</h3>
+                 <h3 className="text-sm font-700 text-slate-800 dark:text-slate-100" style={{ fontWeight: 700 }}>Your Mentors</h3>
                  <p className="text-[10px] text-slate-400 font-500 uppercase tracking-widest mt-1">Available for DM</p>
               </div>
               
               <div className="flex-1 overflow-y-auto p-2 space-y-2">
                  {loading ? (
-                    [1,2].map(i => <div key={i} className="h-14 bg-slate-50 rounded-xl animate-pulse m-2" />)
+                    [1,2].map(i => <div key={i} className="h-14 bg-slate-50 dark:bg-slate-800 rounded-xl animate-pulse m-2" />)
                  ) : mentors.map(m => (
                     <button 
                       key={m.id}
                       onClick={() => setSelectedMentor(m)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${selectedMentor?.id === m.id ? 'bg-[#0A66C2]/10 text-[#0A66C2]' : 'hover:bg-slate-50 text-slate-600'}`}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${selectedMentor?.id === m.id ? 'bg-[#0A66C2]/10 text-[#0A66C2]' : 'hover:bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
                     >
-                       <div className="w-10 h-10 rounded-lg bg-white border border-slate-100 flex items-center justify-center font-700 text-[#0A66C2] flex-shrink-0 shadow-sm">
+                       <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 flex items-center justify-center font-700 text-[#0A66C2] flex-shrink-0 shadow-sm">
                           {m.name[0]}
                        </div>
                        <div className="flex-1 min-w-0 text-left">
@@ -171,9 +171,9 @@ export default function StudentMentorChat() {
                  ))}
               </div>
 
-              <div className="p-4 bg-slate-50/50 border-t border-slate-100">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700">
                  <div className={`flex items-center gap-2 text-[10px] font-800 uppercase tracking-widest ${connected ? 'text-emerald-500' : 'text-slate-400'}`}>
-                    <div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
+                    <div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-50 dark:bg-emerald-900/200 animate-pulse' : 'bg-slate-300'}`} />
                     {connected ? 'Live Sync Active' : 'Offline Mode'}
                  </div>
               </div>
@@ -181,28 +181,28 @@ export default function StudentMentorChat() {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 glass rounded-[32px] border border-slate-100 flex flex-col overflow-hidden bg-white/50 shadow-sm relative">
+        <div className="flex-1 glass rounded-[32px] border border-slate-100 dark:border-slate-700 flex flex-col overflow-hidden bg-white dark:bg-slate-900/50 shadow-sm relative">
           {selectedMentor ? (
             <>
               {/* Chat Header */}
-              <div className="px-8 py-5 border-b border-slate-50 flex items-center justify-between bg-white/80 backdrop-blur-md">
+              <div className="px-8 py-5 border-b border-slate-50 flex items-center justify-between bg-white dark:bg-slate-900/80 backdrop-blur-md">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-[#0A66C2] flex items-center justify-center text-white font-700 shadow-lg shadow-blue-200">
+                  <div className="w-12 h-12 rounded-2xl bg-[#0A66C2] flex items-center justify-center text-white font-700 shadow-lg shadow-blue-200 dark:shadow-blue-900/30">
                     {selectedMentor.name[0]}
                   </div>
                   <div>
-                    <p className="text-base font-700 text-slate-800" style={{ fontWeight: 700 }}>{selectedMentor.name}</p>
+                    <p className="text-base font-700 text-slate-800 dark:text-slate-100" style={{ fontWeight: 700 }}>{selectedMentor.name}</p>
                     <div className="flex items-center gap-2">
-                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/200" />
                        <p className="text-[10px] text-emerald-600 font-700 uppercase tracking-widest">Available to help</p>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                   <button className="p-2.5 text-slate-400 hover:text-[#0A66C2] hover:bg-white rounded-xl transition-all border border-transparent hover:border-slate-100">
+                   <button className="p-2.5 text-slate-400 hover:text-[#0A66C2] hover:bg-white dark:bg-slate-900 rounded-xl transition-all border border-transparent hover:border-slate-100 dark:border-slate-700">
                       <Sparkles size={18} />
                    </button>
-                   <button className="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-white rounded-xl transition-all border border-transparent hover:border-slate-100">
+                   <button className="p-2.5 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-white dark:bg-slate-900 rounded-xl transition-all border border-transparent hover:border-slate-100 dark:border-slate-700">
                       <MoreHorizontal size={18} />
                    </button>
                 </div>
@@ -215,7 +215,7 @@ export default function StudentMentorChat() {
               >
                 {messages.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-50">
-                     <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-300">
+                     <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-300">
                         <MessageSquare size={32} />
                      </div>
                      <p className="text-sm font-500 text-slate-400 max-w-[200px]">Send a message to start your mentoring session.</p>
@@ -228,7 +228,7 @@ export default function StudentMentorChat() {
                         <div className={`px-5 py-3 rounded-2xl text-sm font-500 leading-relaxed ${
                           isSelf 
                           ? 'bg-[#0A66C2] text-white rounded-br-none shadow-lg shadow-blue-900/10' 
-                          : 'bg-white text-slate-800 rounded-bl-none border border-slate-100 shadow-sm'
+                          : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-bl-none border border-slate-100 dark:border-slate-700 shadow-sm'
                         }`}>
                           {msg.content}
                         </div>
@@ -246,7 +246,7 @@ export default function StudentMentorChat() {
                 })}
                 {typing && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-slate-100 px-4 py-2 rounded-2xl flex gap-1 items-center shadow-sm">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 px-4 py-2 rounded-2xl flex gap-1 items-center shadow-sm">
                        <div className="w-1 h-1 bg-slate-300 rounded-full animate-bounce" />
                        <div className="w-1 h-1 bg-slate-300 rounded-full animate-bounce [animation-delay:0.2s]" />
                        <div className="w-1 h-1 bg-slate-300 rounded-full animate-bounce [animation-delay:0.4s]" />
@@ -256,11 +256,11 @@ export default function StudentMentorChat() {
               </div>
 
               {/* Input */}
-              <div className="p-6 bg-white/50 border-t border-slate-50">
-                <form onSubmit={handleSendMessage} className="flex items-end gap-3 bg-white border border-slate-100 p-2 pl-5 rounded-2xl shadow-sm focus-within:ring-2 focus-within:ring-[#0A66C2]/5 focus-within:border-[#0A66C2] transition-all">
+              <div className="p-6 bg-white dark:bg-slate-900/50 border-t border-slate-50">
+                <form onSubmit={handleSendMessage} className="flex items-end gap-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 p-2 pl-5 rounded-2xl shadow-sm focus-within:ring-2 focus-within:ring-[#0A66C2]/5 focus-within:border-[#0A66C2] transition-all">
                   <textarea 
                     rows="1"
-                    className="flex-1 py-3 text-sm text-slate-800 font-500 outline-none resize-none bg-transparent placeholder:text-slate-400"
+                    className="flex-1 py-3 text-sm text-slate-800 dark:text-slate-100 font-500 outline-none resize-none bg-transparent placeholder:text-slate-400"
                     placeholder="Type a message to your mentor..."
                     value={inputText}
                     onChange={handleTyping}
@@ -276,7 +276,7 @@ export default function StudentMentorChat() {
                      <button 
                        type="submit" 
                        disabled={!inputText.trim()}
-                       className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${inputText.trim() ? 'bg-[#0A66C2] text-white shadow-lg shadow-blue-200' : 'bg-slate-50 text-slate-300 cursor-default'}`}
+                       className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${inputText.trim() ? 'bg-[#0A66C2] text-white shadow-lg shadow-blue-200 dark:shadow-blue-900/30' : 'bg-slate-50 dark:bg-slate-800 text-slate-300 cursor-default'}`}
                      >
                         <Send size={18} />
                      </button>
@@ -285,8 +285,8 @@ export default function StudentMentorChat() {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-slate-400 bg-slate-50/30">
-               <div className="w-20 h-20 rounded-3xl bg-white flex items-center justify-center shadow-sm border border-slate-100 mb-4">
+            <div className="flex-1 flex flex-col items-center justify-center text-slate-400 bg-slate-50 dark:bg-slate-800/30">
+               <div className="w-20 h-20 rounded-3xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm border border-slate-100 dark:border-slate-700 mb-4">
                   <User size={40} className="text-slate-200" />
                </div>
                <p className="text-sm font-700 tracking-wide">Select a mentor to chat</p>

@@ -7,6 +7,7 @@ import {
   CheckSquare, BarChart2, Settings, Bell, LogOut,
   Menu, X, Sparkles, ChevronRight, Zap, Target
 } from 'lucide-react';
+import ThemeToggle from '../ThemeToggle';
 
 const mentorNavItems = [
   { href: '/mentor', label: 'Dashboard', icon: LayoutDashboard },
@@ -35,7 +36,7 @@ export default function MentorLayout({ children, title = 'Mentor Dashboard' }) {
   if (!user || user.role !== 'mentor') return <div className="h-screen flex items-center justify-center">Redirecting...</div>;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white selection:bg-blue-100 selection:text-blue-900">
+    <div className="flex h-screen overflow-hidden bg-white dark:bg-slate-950 selection:bg-blue-100 selection:text-blue-900 transition-colors duration-300">
       {/* ── Mobile Sidebar Overlay ── */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 bg-[#111827]/30 backdrop-blur-sm lg:hidden transition-opacity" 
@@ -43,7 +44,7 @@ export default function MentorLayout({ children, title = 'Mentor Dashboard' }) {
       )}
 
       {/* ── Sidebar ── */}
-      <aside className={`fixed top-0 left-0 h-full z-50 w-64 lg:w-72 flex flex-col transition-all duration-300 lg:translate-x-0 lg:static lg:z-auto ${sidebarOpen ? 'translate-x-0 overflow-y-auto' : '-translate-x-full'} bg-[#FFFFFF] border-r border-[#E5E7EB]`}>
+      <aside className={`fixed top-0 left-0 h-full z-50 w-64 lg:w-72 flex flex-col transition-all duration-300 lg:translate-x-0 lg:static lg:z-auto ${sidebarOpen ? 'translate-x-0 overflow-y-auto' : '-translate-x-full'} bg-[#FFFFFF] dark:bg-slate-900 border-r border-[#E5E7EB] dark:border-slate-800`}>
         
         {/* Logo Section */}
         <div className="flex items-center justify-between px-6 py-8">
@@ -53,7 +54,7 @@ export default function MentorLayout({ children, title = 'Mentor Dashboard' }) {
               <Zap size={20} className="text-white fill-white/20" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[#111827] text-lg leading-tight tracking-tight" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700 }}>Mentra AI</span>
+              <span className="text-[#111827] dark:text-white text-lg leading-tight tracking-tight" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700 }}>Mentra AI</span>
               <span className="text-[#00C4B4] text-[10px] uppercase font-700 tracking-[0.2em] mt-0.5">Mentor Portal</span>
             </div>
           </Link>
@@ -68,7 +69,7 @@ export default function MentorLayout({ children, title = 'Mentor Dashboard' }) {
             const active = router.pathname === href;
             return (
               <Link key={href} href={href}
-                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-500 transition-all duration-200 group ${active ? 'bg-[#0A66C2]/5 text-[#0A66C2]' : 'text-slate-500 hover:text-[#111827] hover:bg-[#F9FAFB]'}`}
+                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-500 transition-all duration-200 group ${active ? 'bg-[#0A66C2]/5 dark:bg-[#0A66C2]/10 text-[#0A66C2]' : 'text-slate-500 hover:text-[#111827] dark:hover:text-white hover:bg-[#F9FAFB] dark:hover:bg-slate-800'}`}
                 style={{ fontWeight: active ? 600 : 500 }}
                 onClick={() => setSidebarOpen(false)}>
                 <Icon size={19} className={`${active ? 'text-[#0A66C2]' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
@@ -80,13 +81,13 @@ export default function MentorLayout({ children, title = 'Mentor Dashboard' }) {
         </nav>
 
         {/* User Card (Bottom Section) */}
-        <div className="p-4 mx-4 mb-6 rounded-2xl bg-[#F9FAFB] border border-[#E5E7EB] group transition-all hover:border-[#0A66C2]/20">
+        <div className="p-4 mx-4 mb-6 rounded-2xl bg-[#F9FAFB] dark:bg-slate-800 border border-[#E5E7EB] dark:border-slate-700 group transition-all hover:border-[#0A66C2]/20">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white border border-[#E5E7EB] flex items-center justify-center text-[#0A66C2] font-700 text-sm shadow-sm">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-600 text-[#111827] truncate">{user.name}</p>
+              <p className="text-sm font-600 text-[#111827] dark:text-white truncate">{user.name}</p>
               <p className="text-[10px] text-slate-500 truncate uppercase tracking-widest font-500">Professional Mentor</p>
             </div>
           </div>
@@ -105,13 +106,13 @@ export default function MentorLayout({ children, title = 'Mentor Dashboard' }) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {/* Top Header */}
-        <header className="h-20 flex items-center justify-between px-8 bg-white border-b border-[#E5E7EB]">
+        <header className="h-20 flex items-center justify-between px-8 bg-white dark:bg-slate-900 border-b border-[#E5E7EB] dark:border-slate-800">
           <div className="flex items-center gap-6">
             <button className="lg:hidden p-2 -ml-2 text-slate-500 hover:text-[#111827] transition-colors" onClick={() => setSidebarOpen(true)}>
               <Menu size={24} />
             </button>
             <div className="flex flex-col">
-              <h1 className="text-xl font-700 text-[#111827]" style={{ fontFamily: 'Sora, sans-serif' }}>{title}</h1>
+              <h1 className="text-xl font-700 text-[#111827] dark:text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{title}</h1>
               <div className="flex items-center gap-2 text-[11px] text-slate-400 font-500 tracking-wide uppercase">
                 <Target size={12} className="text-[#00C4B4]" />
                 <span>Productivity Track: Online</span>
@@ -120,6 +121,7 @@ export default function MentorLayout({ children, title = 'Mentor Dashboard' }) {
           </div>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             {/* AI Assistant Summary Tool */}
             <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-[#00C4B4]/5 border border-[#00C4B4]/10 text-[#00C4B4] text-xs font-600 transition-all cursor-default">
               <Sparkles size={14} className="animate-pulse" />
@@ -130,7 +132,7 @@ export default function MentorLayout({ children, title = 'Mentor Dashboard' }) {
             <div className="relative">
               <button 
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="w-10 h-10 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] flex items-center justify-center text-slate-500 hover:text-[#0A66C2] hover:border-[#0A66C2]/30 transition-all">
+                className="w-10 h-10 rounded-xl bg-[#F9FAFB] dark:bg-slate-800 border border-[#E5E7EB] dark:border-slate-700 flex items-center justify-center text-slate-500 hover:text-[#0A66C2] hover:border-[#0A66C2]/30 transition-all">
                 <Bell size={18} />
                 <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-[8px] text-white font-900">2</div>
               </button>
@@ -139,7 +141,7 @@ export default function MentorLayout({ children, title = 'Mentor Dashboard' }) {
         </header>
 
         {/* Page Area */}
-        <main className="flex-1 overflow-y-auto bg-[#FFFFFF] p-8 custom-scrollbar">
+        <main className="flex-1 overflow-y-auto bg-[#FFFFFF] dark:bg-slate-950 p-8 custom-scrollbar">
           {children}
         </main>
       </div>

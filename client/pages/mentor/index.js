@@ -5,20 +5,20 @@ import { Users, Activity, MessageCircle, Calendar, Sparkles, ChevronRight, Arrow
 import Link from 'next/link';
 
 const StatCard = ({ icon: Icon, label, value, trend, color }) => (
-  <div className="bg-[#F9FAFB] p-6 rounded-2xl border border-[#E5E7EB] card-hover">
+  <div className="bg-[#F9FAFB] dark:bg-slate-800/60 p-6 rounded-2xl border border-[#E5E7EB] dark:border-slate-700 card-hover">
     <div className="flex items-start justify-between mb-4">
-      <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white border border-[#E5E7EB] shadow-sm">
+      <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border border-[#E5E7EB] dark:border-slate-700 shadow-sm">
         <Icon size={20} style={{ color }} />
       </div>
       {trend && (
-        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-700">
+        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-700">
           <ArrowUpRight size={10} />
           {trend}
         </div>
       )}
     </div>
-    <p className="text-3xl font-700 text-[#111827]" style={{ fontFamily: 'Sora, sans-serif' }}>{value}</p>
-    <p className="text-sm font-500 text-slate-500 mt-1">{label}</p>
+    <p className="text-3xl font-700 text-[#111827] dark:text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{value}</p>
+    <p className="text-sm font-500 text-slate-500 dark:text-slate-400 mt-1">{label}</p>
   </div>
 );
 
@@ -90,7 +90,7 @@ export default function MentorDashboard() {
           {/* Main Area: Recent Sessions */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-700 text-[#111827]" style={{ fontFamily: 'Sora, sans-serif' }}>Upcoming Sessions</h3>
+              <h3 className="text-lg font-700 text-[#111827] dark:text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Upcoming Sessions</h3>
               <Link href="/mentor/sessions" className="text-sm font-600 text-[#0A66C2] hover:underline flex items-center gap-1">
                 View All <ChevronRight size={14} />
               </Link>
@@ -98,31 +98,31 @@ export default function MentorDashboard() {
             
             <div className="space-y-4">
               {sessions.map((session) => (
-                <div key={session.id} className="bg-[#F9FAFB] p-5 rounded-2xl border border-[#E5E7EB] flex items-center justify-between group hover:border-[#0A66C2]/30 transition-all">
+                <div key={session.id} className="bg-[#F9FAFB] dark:bg-slate-800/60 p-5 rounded-2xl border border-[#E5E7EB] dark:border-slate-700 flex items-center justify-between group hover:border-[#0A66C2]/30 transition-all">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-white border border-[#E5E7EB] flex items-center justify-center text-[#0A66C2] font-700 shadow-sm">
+                    <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 border border-[#E5E7EB] dark:border-slate-700 flex items-center justify-center text-[#0A66C2] font-700 shadow-sm">
                       {session.studentName[0]}
                     </div>
                     <div>
-                      <p className="text-sm font-600 text-[#111827]">{session.studentName}</p>
-                      <p className="text-xs text-slate-500 font-500">{session.type}</p>
+                      <p className="text-sm font-600 text-[#111827] dark:text-white">{session.studentName}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-500">{session.type}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-8">
                     <div className="hidden sm:flex flex-col items-end">
-                      <p className="text-sm font-700 text-[#111827]">
+                      <p className="text-sm font-700 text-[#111827] dark:text-white">
                         {new Date(session.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                       <p className="text-[10px] text-slate-400 font-600 uppercase tracking-wider">Duration: {session.duration}</p>
                     </div>
-                    <button className="px-4 py-2 bg-white text-[#111827] border border-[#E5E7EB] rounded-lg text-xs font-700 shadow-sm hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] transition-all">
+                    <button className="px-4 py-2 bg-white dark:bg-slate-800 text-[#111827] dark:text-white border border-[#E5E7EB] dark:border-slate-700 rounded-lg text-xs font-700 shadow-sm hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] transition-all">
                       Join Call
                     </button>
                   </div>
                 </div>
               ))}
               {sessions.length === 0 && (
-                <div className="py-12 text-center bg-[#F9FAFB] rounded-2xl border border-dashed border-[#E5E7EB]">
+                <div className="py-12 text-center bg-[#F9FAFB] dark:bg-slate-800/40 rounded-2xl border border-dashed border-[#E5E7EB] dark:border-slate-700">
                   <p className="text-slate-400 text-sm">No sessions scheduled for today.</p>
                 </div>
               )}
@@ -131,45 +131,45 @@ export default function MentorDashboard() {
 
           {/* Sidebar Area: AI Suggestions & Notifications */}
           <div className="space-y-8">
-            <div className="bg-white p-6 rounded-2xl border border-[#E5E7EB] shadow-sm">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-[#E5E7EB] dark:border-slate-700 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="font-700 text-[#111827]" style={{ fontFamily: 'Sora, sans-serif' }}>AI Assistant</h3>
+                <h3 className="font-700 text-[#111827] dark:text-white" style={{ fontFamily: 'Sora, sans-serif' }}>AI Assistant</h3>
                 <Sparkles size={16} className="text-[#00C4B4]" />
               </div>
               
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-[#0A66C2]/5 border border-[#0A66C2]/10">
+                <div className="p-4 rounded-xl bg-[#0A66C2]/5 dark:bg-[#0A66C2]/10 border border-[#0A66C2]/10 dark:border-[#0A66C2]/20">
                   <p className="text-xs font-700 text-[#0A66C2] uppercase tracking-wider mb-2">Performance Alert</p>
-                  <p className="text-sm text-slate-600 leading-relaxed font-500">Alex's completion rate dropped by 15% this week. Suggest a mentorship check-in?</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-500">Alex's completion rate dropped by 15% this week. Suggest a mentorship check-in?</p>
                   <button className="mt-3 text-xs font-700 text-[#0A66C2] hover:underline">Draft Message →</button>
                 </div>
                 
-                <div className="p-4 rounded-xl bg-[#00C4B4]/5 border border-[#00C4B4]/10">
+                <div className="p-4 rounded-xl bg-[#00C4B4]/5 dark:bg-[#00C4B4]/10 border border-[#00C4B4]/10 dark:border-[#00C4B4]/20">
                   <p className="text-xs font-700 text-[#00C4B4] uppercase tracking-wider mb-2">Topic Suggester</p>
-                  <p className="text-sm text-slate-600 leading-relaxed font-500">Based on Sarah's progress, "Advance Hooks" is the logical next step. Generate task?</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-500">Based on Sarah's progress, "Advance Hooks" is the logical next step. Generate task?</p>
                   <button className="mt-3 text-xs font-700 text-[#00C4B4] hover:underline">Create Task →</button>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-[#E5E7EB] shadow-sm">
-              <h3 className="font-700 text-[#111827] mb-6" style={{ fontFamily: 'Sora, sans-serif' }}>Notifications</h3>
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-[#E5E7EB] dark:border-slate-700 shadow-sm">
+              <h3 className="font-700 text-[#111827] dark:text-white mb-6" style={{ fontFamily: 'Sora, sans-serif' }}>Notifications</h3>
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 flex items-center justify-center shrink-0">
                     <Target size={14} />
                   </div>
                   <div>
-                    <p className="text-sm text-slate-700 font-500"><span className="font-700 text-[#111827]">Task Submitted</span> by Emma Wilson</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300 font-500"><span className="font-700 text-[#111827] dark:text-white">Task Submitted</span> by Emma Wilson</p>
                     <p className="text-[10px] text-slate-400 font-600 uppercase mt-1">12 mins ago</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#0A66C2] flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-[#0A66C2] flex items-center justify-center shrink-0">
                     <MessageCircle size={14} />
                   </div>
                   <div>
-                    <p className="text-sm text-slate-700 font-500"><span className="font-700 text-[#111827]">New Message</span> from Sarah Miller</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300 font-500"><span className="font-700 text-[#111827] dark:text-white">New Message</span> from Sarah Miller</p>
                     <p className="text-[10px] text-slate-400 font-600 uppercase mt-1">45 mins ago</p>
                   </div>
                 </div>

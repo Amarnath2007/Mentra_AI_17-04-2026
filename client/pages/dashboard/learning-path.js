@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../lib/auth';
 import DashboardLayout from '../../components/layout/DashboardLayout';
@@ -82,7 +82,7 @@ export default function LearningPath() {
             <h2 className="text-xl font-700" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>
               {path ? path.title : 'Your Learning Path'}
             </h2>
-            {path && <p className="text-sm mt-0.5 text-slate-500">{path.description}</p>}
+            {path && <p className="text-sm mt-0.5 text-slate-500 dark:text-slate-400">{path.description}</p>}
           </div>
           <button onClick={() => setShowForm(!showForm)} className="btn-primary text-sm py-2 px-4">
             <Sparkles size={14} />
@@ -152,7 +152,7 @@ export default function LearningPath() {
           <div className="glass rounded-2xl p-12 text-center">
             <BookOpen size={48} className="mx-auto mb-4" style={{ color: 'rgba(37,99,235,0.4)' }} />
             <h3 className="text-lg font-600 mb-2" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600 }}>No learning path yet</h3>
-            <p className="text-sm mb-6 text-slate-500">Generate a personalized AI learning path based on your interests and goals.</p>
+            <p className="text-sm mb-6 text-slate-500 dark:text-slate-400">Generate a personalized AI learning path based on your interests and goals.</p>
             <button onClick={() => setShowForm(true)} className="btn-primary">
               <Sparkles size={15} /> Generate my learning path
             </button>
@@ -167,7 +167,7 @@ export default function LearningPath() {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-sm font-500" style={{ fontWeight: 500 }}>Overall Progress</p>
-                  <p className="text-xs text-slate-500">{completedTopics.size} of {path.topics?.length || 0} topics completed</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{completedTopics.size} of {path.topics?.length || 0} topics completed</p>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-700 gradient-text" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>{progress}%</p>
@@ -177,7 +177,7 @@ export default function LearningPath() {
                   </div>
                 </div>
               </div>
-              <div className="h-3 rounded-full overflow-hidden bg-slate-100">
+              <div className="h-3 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                 <div className="h-full rounded-full transition-all duration-700"
                   style={{ width: `${progress}%`, background: 'linear-gradient(90deg,#1d4ed8,#2563eb,#3b82f6)' }} />
               </div>
@@ -189,7 +189,7 @@ export default function LearningPath() {
                 const isCompleted = completedTopics.has(topic.title);
                 const isExpanded = expandedTopics[idx];
                 return (
-                  <div key={idx} className={`rounded-2xl overflow-hidden transition-all bg-white border ${isCompleted ? 'opacity-80 border-green-200' : 'border-slate-200'}`}>
+                  <div key={idx} className={`rounded-2xl overflow-hidden transition-all bg-white dark:bg-slate-900 border ${isCompleted ? 'opacity-80 border-green-200' : 'border-slate-200 dark:border-slate-700'}`}>
 
                     {/* Topic header */}
                     <div className="flex items-center gap-4 p-4 cursor-pointer select-none" onClick={() => toggleTopic(idx)}>
@@ -201,14 +201,14 @@ export default function LearningPath() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className={`font-500 text-sm ${isCompleted ? 'line-through text-slate-400' : 'text-slate-800'}`} style={{ fontWeight: 500 }}>
+                          <p className={`font-500 text-sm ${isCompleted ? 'line-through text-slate-400' : 'text-slate-800 dark:text-slate-100'}`} style={{ fontWeight: 500 }}>
                             {topic.title}
                           </p>
                           <span className="badge text-xs" style={{ background: `${diffColor[topic.difficulty] || '#2563eb'}15`, color: diffColor[topic.difficulty] || '#3b82f6', border: `1px solid ${diffColor[topic.difficulty] || '#2563eb'}25`, padding: '1px 8px' }}>
                             {topic.difficulty}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
+                        <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                           <span className="flex items-center gap-1"><Clock size={10} />{topic.estimatedHours}h</span>
                           {topic.resources?.length > 0 && <span>{topic.resources.length} resources</span>}
                         </div>
@@ -216,7 +216,7 @@ export default function LearningPath() {
 
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <button onClick={(e) => { e.stopPropagation(); markComplete(topic.title); }}
-                          className="p-1.5 rounded-lg transition-all hover:bg-white/5">
+                          className="p-1.5 rounded-lg transition-all hover:bg-white dark:bg-slate-900/5">
                           {isCompleted
                             ? <CheckCircle size={20} style={{ color: '#4ade80' }} />
                             : <Circle size={20} className="text-slate-300" />}
@@ -228,7 +228,7 @@ export default function LearningPath() {
                     {/* Expanded content */}
                     {isExpanded && (
                       <div className="px-4 pb-4 pt-0 space-y-3" style={{ borderTop: '1px solid rgba(37,99,235,0.08)' }}>
-                        <p className="text-sm mt-3 text-slate-600 leading-relaxed">{topic.description}</p>
+                        <p className="text-sm mt-3 text-slate-600 dark:text-slate-300 leading-relaxed">{topic.description}</p>
                         {topic.resources?.length > 0 && (
                           <div>
                             <p className="text-xs font-600 mb-2 text-slate-400 uppercase tracking-wider">Resources</p>
@@ -236,7 +236,7 @@ export default function LearningPath() {
                               {topic.resources.map((res, ri) => (
                                 <a key={ri} href={res.url !== '#' ? res.url : undefined}
                                   target="_blank" rel="noopener noreferrer"
-                                  className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition-all hover:bg-white/5"
+                                  className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition-all hover:bg-white dark:bg-slate-900/5"
                                   style={{ color: '#3b82f6', border: '1px solid rgba(37,99,235,0.1)' }}>
                                   <span className="text-base">{res.type === 'video' ? '🎬' : res.type === 'docs' ? '📄' : res.type === 'code' ? '💻' : '📚'}</span>
                                   {res.title}

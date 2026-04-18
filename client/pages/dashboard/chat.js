@@ -138,8 +138,8 @@ export default function Chat() {
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all ${activeRoom?.id === room.id ? 'nav-active' : 'hover:bg-white/5 text-gray-400'}`}>
                 <span className="text-base flex-shrink-0">{room.icon || '#'}</span>
                 <div className="min-w-0">
-                  <p className="font-500 truncate text-slate-800" style={{ fontWeight: 500 }}>{room.name}</p>
-                  {room.members && <p className="text-xs text-slate-500">{room.members} members</p>}
+                  <p className="font-500 truncate text-slate-800 dark:text-slate-200" style={{ fontWeight: 500 }}>{room.name}</p>
+                  {room.members && <p className="text-xs text-slate-500 dark:text-slate-400">{room.members} members</p>}
                 </div>
               </button>
             ))}
@@ -153,11 +153,11 @@ export default function Chat() {
             <div className="flex items-center gap-3">
               <span className="text-xl">{activeRoom?.icon || '#'}</span>
               <div>
-                <p className="font-600 text-sm text-slate-800" style={{ fontWeight: 600 }}>{activeRoom?.name || 'Select a room'}</p>
-                <p className="text-xs text-slate-500">{activeRoom?.description || ''}</p>
+                <p className="font-600 text-sm text-slate-800 dark:text-white" style={{ fontWeight: 600 }}>{activeRoom?.name || 'Select a room'}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{activeRoom?.description || ''}</p>
               </div>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <Users size={12} />
               <span>{activeRoom?.members || 0}</span>
             </div>
@@ -227,14 +227,14 @@ export default function Chat() {
           </div>
 
           {/* Input */}
-          <div className="p-3" style={{ borderTop: '1px solid rgba(37,99,235,0.1)' }}>
+          <div className="p-3" style={{ borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
             <div className="flex gap-2 items-center">
-              <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200">
+              <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                 <span className="text-sm text-slate-400"><Hash size={14} /></span>
                 <input value={input} onChange={handleTyping}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                   placeholder={`Message #${activeRoom?.name || 'general'}...`}
-                  className="flex-1 bg-transparent outline-none text-sm text-slate-800"
+                  className="flex-1 bg-transparent outline-none text-sm text-slate-800 dark:text-slate-100"
                   style={{ fontFamily: 'DM Sans,sans-serif' }}
                 />
               </div>

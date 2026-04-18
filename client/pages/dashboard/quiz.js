@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../lib/auth';
 import DashboardLayout from '../../components/layout/DashboardLayout';
@@ -79,7 +79,7 @@ export default function Quiz() {
               <Brain size={32} style={{ color: '#3b82f6' }} />
             </div>
             <h2 className="text-2xl font-700 mb-2" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>AI Quiz Generator</h2>
-            <p className="text-sm mb-8 text-slate-500">Test your knowledge with AI-generated questions on any topic</p>
+            <p className="text-sm mb-8 text-slate-500 dark:text-slate-400">Test your knowledge with AI-generated questions on any topic</p>
 
             <div className="text-left space-y-5">
               <div>
@@ -132,14 +132,14 @@ export default function Quiz() {
             <div className="glass rounded-2xl p-4 flex items-center justify-between">
               <div>
                 <p className="font-600 text-sm" style={{ fontWeight: 600 }}>{quiz.topic} Quiz</p>
-                <p className="text-xs text-slate-500">{answered} of {quiz.questions.length} answered</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{answered} of {quiz.questions.length} answered</p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5 text-sm" style={{ color: timeLeft < 30 ? '#ef4444' : '#64748b' }}>
                   <Clock size={14} />
                   <span className="font-mono">{timeLeft !== null ? formatTime(timeLeft) : '--:--'}</span>
                 </div>
-                <div className="w-24 h-2 rounded-full overflow-hidden bg-slate-100">
+                <div className="w-24 h-2 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                   <div className="h-full rounded-full transition-all" style={{ width: `${(answered / quiz.questions.length) * 100}%`, background: 'linear-gradient(90deg,#1d4ed8,#2563eb)' }} />
                 </div>
               </div>
@@ -201,7 +201,7 @@ export default function Quiz() {
               <p className="font-500 mb-1" style={{ fontWeight: 500 }}>
                 {score} / {quiz.questions.length} correct
               </p>
-              <p className="text-sm mb-6 text-slate-500">
+              <p className="text-sm mb-6 text-slate-500 dark:text-slate-400">
                 {scorePercent >= 80 ? '🎉 Excellent work!' : scorePercent >= 60 ? '👍 Good effort, keep practicing!' : '📚 Review the material and try again.'}
               </p>
               <div className="flex gap-3 justify-center">
@@ -221,7 +221,7 @@ export default function Quiz() {
                 const userAnswer = answers[q.id];
                 const correct = userAnswer === q.answer;
                 return (
-                  <div key={q.id} className="rounded-2xl p-5 bg-white border shadow-sm" style={{ borderColor: correct ? '#86efac' : '#fca5a5' }}>
+                  <div key={q.id} className="rounded-2xl p-5 bg-white dark:bg-slate-900 border shadow-sm" style={{ borderColor: correct ? '#86efac' : '#fca5a5' }}>
                     <div className="flex items-start gap-2 mb-3">
                       {correct ? <CheckCircle size={18} style={{ color: '#4ade80', flexShrink: 0, marginTop: 1 }} /> : <XCircle size={18} style={{ color: '#f87171', flexShrink: 0, marginTop: 1 }} />}
                       <p className="text-sm font-500" style={{ fontWeight: 500 }}>{q.question}</p>
