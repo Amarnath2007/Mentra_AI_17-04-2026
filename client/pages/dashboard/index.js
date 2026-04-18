@@ -3,11 +3,12 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useAuth } from '../../lib/auth';
 import DashboardLayout from '../../components/layout/DashboardLayout';
-import { getAIProfile, getRecommendations, getNextAction, updateActionStatus } from '../../lib/api';
+import { getAIProfile, getRecommendations, getTodayTasks } from '../../lib/api';
 import {
   BookOpen, Brain, MessageSquare, Trophy, Zap, TrendingUp,
   ChevronRight, Star, Clock, Target, Flame, Bot, AlertTriangle,
-  CheckCircle, Rocket, Map, Lightbulb, Compass, Sparkles, Send, HelpCircle, RotateCw, SkipForward
+  CheckCircle, Rocket, Map, Lightbulb, Compass, Sparkles, Send, HelpCircle, RotateCw, SkipForward,
+  Circle, ArrowRight
 } from 'lucide-react';
 
 const StatCard = ({ icon: Icon, label, value, sub, color, href }) => {
@@ -32,9 +33,9 @@ export default function Dashboard() {
   const router = useRouter();
   const [aiProfile, setAiProfile] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
-  const [nextAction, setNextAction] = useState(null);
+  const [todayData, setTodayData] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const [updatingAction, setUpdatingAction] = useState(false);
+  const [showCourses, setShowCourses] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) { router.push('/login'); return; }
@@ -45,33 +46,23 @@ export default function Dashboard() {
   const fetchData = async () => {
     setLoadingProfile(true);
     try {
-      const [profileRes, recRes, actionRes] = await Promise.all([
+      const [profileRes, recRes, todayRes] = await Promise.all([
         getAIProfile().catch(() => ({ data: null })),
         getRecommendations({ interests: user?.interests || [] }).catch(() => ({ data: { recommendations: [] } })),
-        getNextAction().catch(() => ({ data: null }))
+        getTodayTasks().catch(() => ({ data: null })),
       ]);
       setAiProfile(profileRes.data);
       setRecommendations(recRes.data.recommendations?.slice(0, 4) || []);
-      setNextAction(actionRes.data);
+      setTodayData(todayRes.data);
     } finally {
       setLoadingProfile(false);
     }
   };
 
-  const handleActionUpdate = async (status) => {
-    if (!nextAction) return;
-    setUpdatingAction(true);
-    try {
-      await updateActionStatus({ id: nextAction.id, status });
-      await fetchData();
-    } finally {
-      setUpdatingAction(false);
-    }
-  };
-
   if (loading || !user) return null;
 
-  const completedCount = user?.progress?.completedTopics?.length || 0;
+  const completedJourneyDays = todayData?.completedDays || 0;
+  const completedCount = (user?.progress?.completedTopics?.length || 0) + completedJourneyDays;
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -82,6 +73,12 @@ export default function Dashboard() {
 
   const level = aiProfile?.level || user?.experience_level || 'beginner';
   const levelColor = level === 'advanced' ? '#ef4444' : level === 'intermediate' ? '#f59e0b' : '#22c55e';
+
+  // Journey data
+  const hasJourney = todayData?.journey;
+  const todayTasks = todayData?.tasks || [];
+  const journeyProgress = todayData?.progress || 0;
+  const currentDay = todayData?.currentDay || 1;
 
   return (
     <DashboardLayout title="Dashboard">
@@ -105,8 +102,8 @@ export default function Dashboard() {
               <Link href="/dashboard/mentor-chat" className="btn-primary py-2 px-5 text-sm">
                 <Bot size={15} /> Talk to AI Mentor
               </Link>
-              <Link href="/dashboard/facts" className="btn-secondary py-2 px-5 text-sm">
-                <Sparkles size={15} /> Daily Fun Facts
+              <Link href="/dashboard/journey" className="btn-secondary py-2 px-5 text-sm">
+                <Map size={15} /> My Journey
               </Link>
             </div>
           </div>
@@ -115,13 +112,54 @@ export default function Dashboard() {
         {/* Stats grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <StatCard icon={Trophy} label="Tasks Completed" value={completedCount} sub="Your learning milestone" color="#f59e0b" />
-          <StatCard icon={Brain} label="Current Skill Level" value={level.charAt(0).toUpperCase() + level.slice(1)} sub={`${(user.skills || []).length} skills identified`} color="#22c55e" />
+          <div className="glass rounded-2xl p-6 border border-slate-100 bg-white relative cursor-pointer hover:shadow-md transition-all group"
+            onClick={() => setShowCourses(!showCourses)}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
+                <BookOpen size={20} />
+              </div>
+              <ChevronRight size={16} className={`text-slate-300 group-hover:text-slate-600 transition-all ${showCourses ? 'rotate-90' : ''}`} />
+            </div>
+            <div>
+              <h3 className="text-sm font-600 text-slate-500 uppercase tracking-wider">My Courses</h3>
+              <p className="text-2xl font-700 text-slate-900 mt-1" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>
+                {(user.enrolledCourses || []).length} Enrolled
+              </p>
+            </div>
+
+            {/* Expanded course list */}
+            {showCourses && (
+              <div className="mt-4 pt-4 border-t border-slate-50 animate-slide-up">
+                {(user.enrolledCourses || []).length === 0 ? (
+                  <div className="py-2 text-center bg-slate-50 rounded-lg">
+                    <p className="text-xs text-slate-400">No course enrolled</p>
+                    <Link href="/dashboard/courses" className="text-[10px] text-blue-500 font-600 mt-1 block hover:underline">Explore Catalog</Link>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {user.enrolledCourses.map((c, i) => (
+                      <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
+                        <Play size={10} className="text-blue-500" />
+                        <span className="text-xs text-slate-700 font-500">{c.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <div className="absolute top-2 right-2 text-[10px] font-600 uppercase tracking-widest px-2 py-0.5 rounded-full bg-green-50 text-green-600">
+              {level} Level
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Today's Focus (Next Action) */}
           <div className="lg:col-span-2 glass rounded-2xl p-8 relative overflow-hidden bg-white dark:bg-slate-900 border border-blue-100 dark:border-blue-900/40 shadow-xl shadow-blue-500/5">
+          {/* Today's Tasks (from Journey) */}
+          <div className="lg:col-span-2 glass rounded-2xl p-8 relative overflow-hidden bg-white border border-blue-100 shadow-xl shadow-blue-500/5">
             <div className="absolute top-0 right-0 p-8 text-blue-100 opacity-20 pointer-events-none">
               <Rocket size={120} />
             </div>
@@ -134,7 +172,23 @@ export default function Dashboard() {
                 <div>
                   <h3 className="text-xl font-700 dark:text-white" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Today's Focus</h3>
                   <p className="text-xs text-slate-400 font-500">INDIVIDUAL ACTION ITEM</p>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200">
+                    <Target size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-700" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Today's Tasks</h3>
+                    <p className="text-xs text-slate-400 font-500">
+                      {hasJourney ? `Day ${currentDay} · ${journeyProgress}% complete` : 'YOUR DAILY FOCUS'}
+                    </p>
+                  </div>
                 </div>
+                {hasJourney && (
+                  <Link href="/dashboard/journey" className="text-xs font-600 text-blue-600 flex items-center gap-1 hover:underline">
+                    Full Journey <ArrowRight size={12} />
+                  </Link>
+                )}
               </div>
 
               {loadingProfile ? (
@@ -190,14 +244,65 @@ export default function Dashboard() {
                     >
                       <RotateCw size={18} className={loadingProfile ? 'animate-spin' : ''} />
                     </button>
+              ) : hasJourney && todayTasks.length > 0 ? (
+                <div className="space-y-3 animate-slide-up">
+                  {/* Journey goal context */}
+                  <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100 mb-4 flex items-center gap-3">
+                    <Map size={16} className="text-blue-500 flex-shrink-0" />
+                    <p className="text-xs text-blue-600 font-500">
+                      Journey: <span className="font-700" style={{ fontWeight: 700 }}>{todayData.journey.goal}</span>
+                    </p>
                   </div>
+
+                  {/* Progress bar */}
+                  <div className="mb-4">
+                    <div className="bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${journeyProgress}%`, background: journeyProgress === 100 ? '#22c55e' : 'linear-gradient(90deg,#1d4ed8,#3b82f6)' }} />
+                    </div>
+                  </div>
+
+                  {/* Today's task cards */}
+                  {todayTasks.map(task => (
+                    <div key={task.id} className="rounded-xl border p-5 transition-all bg-white border-blue-200 hover:shadow-md">
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-100 text-blue-600">
+                          <Target size={18} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] font-700 text-blue-500 uppercase tracking-widest mb-1" style={{ fontWeight: 700 }}>Day {task.day_number} · {task.topic || 'Today\'s Task'}</p>
+                          <h4 className="text-sm font-600 text-slate-800 mb-1" style={{ fontWeight: 600 }}>{task.title}</h4>
+                          <p className="text-xs text-slate-500 leading-relaxed mb-3">{task.description}</p>
+                          <Link href="/dashboard/journey"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-600 text-white shadow-sm"
+                            style={{ background: 'linear-gradient(135deg,#1d4ed8,#2563eb)' }}>
+                            <Sparkles size={12} /> Start Learning & Quiz
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : hasJourney && todayTasks.length === 0 ? (
+                <div className="text-center py-10">
+                  <div className="text-4xl mb-3">🎉</div>
+                  <p className="text-sm font-600 text-slate-600 mb-1" style={{ fontWeight: 600 }}>No tasks for today</p>
+                  <p className="text-xs text-slate-400 mb-4">Check your full journey for upcoming tasks.</p>
+                  <Link href="/dashboard/journey" className="btn-primary text-sm mx-auto">
+                    <Map size={14} /> View Journey
+                  </Link>
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <p className="text-slate-500 mb-4 text-sm font-500">No action pending. Ready for a new focus?</p>
-                  <button onClick={fetchData} className="btn-primary mx-auto">
-                    <Sparkles size={16} /> Generate Next Action
-                  </button>
+                /* No journey started */
+                <div className="text-center py-10">
+                  <div className="text-5xl mb-4">🚀</div>
+                  <h4 className="text-lg font-700 text-slate-700 mb-2" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Start Your Learning Journey</h4>
+                  <p className="text-sm text-slate-500 mb-5">Set a goal and let AI create a personalized day-by-day path for you.</p>
+                  <Link href="/dashboard/journey"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-600 text-white shadow-lg shadow-blue-200"
+                    style={{ background: 'linear-gradient(135deg,#1d4ed8,#2563eb)' }}>
+                    <Sparkles size={16} /> Create My Journey
+                  </Link>
                 </div>
               )}
             </div>
@@ -240,9 +345,10 @@ export default function Dashboard() {
             <Target size={18} style={{ color: '#fb923c' }} />
             Quick Actions
           </h3>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { href: '/dashboard/mentor-chat', icon: Bot, label: 'AI Mentor', sub: 'Get personalized guidance', color: '#2563eb' },
+              { href: '/dashboard/journey', icon: Map, label: 'My Journey', sub: 'Your learning path', color: '#8b5cf6' },
               { href: '/dashboard/courses', icon: Compass, label: 'Explore Courses', sub: 'Find your next skill', color: '#22c55e' },
               { href: '/dashboard/chat', icon: MessageSquare, label: 'Community', sub: 'Join the discussion', color: '#a78bfa' },
             ].map(({ href, icon: Icon, label, sub, color }) => (
@@ -264,4 +370,3 @@ export default function Dashboard() {
     </DashboardLayout>
   );
 }
-

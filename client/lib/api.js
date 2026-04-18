@@ -54,7 +54,7 @@ export const getDailyInsights = () => api.get('/ai/daily-insights');
 export const refreshDailyInsights = () => api.post('/ai/daily-insights/refresh');
 export const submitInsightAnswer = (data) => api.post('/ai/daily-insights/answer', data);
 
-// ─── Chat (community rooms) ─────────────────────────────────────────────────
+// ─── Chat (legacy rooms) ────────────────────────────────────────────────────
 export const sendMessage = (data) => api.post('/chat/send', data);
 export const getChatHistory = (room, limit = 50) => api.get(`/chat/history/${room}?limit=${limit}`);
 export const getChatRooms = () => api.get('/chat/rooms');
@@ -66,5 +66,23 @@ export const getMentorStudents = () => api.get('/mentor/students');
 export const getMentorSessions = () => api.get('/mentor/sessions');
 export const getMentorTasks = () => api.get('/mentor/tasks');
 export const getMentorAnalytics = () => api.get('/mentor/analytics');
+
+// ─── Communities ────────────────────────────────────────────────────────────
+export const getCommunities = (search = '') => api.get(`/communities${search ? `?search=${encodeURIComponent(search)}` : ''}`);
+export const getMyCommunities = () => api.get('/communities/me');
+export const getCommunity = (id) => api.get(`/communities/${id}`);
+export const createCommunity = (data) => api.post('/communities', data);
+export const joinCommunity = (id) => api.post(`/communities/${id}/join`);
+export const leaveCommunity = (id) => api.post(`/communities/${id}/leave`);
+export const getCommunityMessages = (id, limit = 50) => api.get(`/communities/${id}/messages?limit=${limit}`);
+export const sendCommunityMessage = (id, content) => api.post(`/communities/${id}/messages`, { content });
+
+// ─── Journey ────────────────────────────────────────────────────────────────
+export const startJourney = (data) => api.post('/journey/start', data);
+export const getMyJourney = () => api.get('/journey/me');
+export const getTodayTasks = () => api.get('/journey/tasks/today');
+export const completeJourneyTask = (taskId) => api.post(`/journey/task/${taskId}/complete`);
+export const submitJourneyQuiz = (taskId, answers) => api.post(`/journey/task/${taskId}/submit-quiz`, { answers });
+export const getJourneyRewards = () => api.get('/journey/rewards');
 
 export default api;
