@@ -59,6 +59,7 @@ router.get('/history/:room', auth, async (req, res) => {
         if (messages && !error) {
           return res.json(messages.reverse().map(m => ({
               ...m,
+              createdAt: m.created_at, // Normalize for frontend
               sender: m.senderUser || { name: m.senderName, role: m.senderRole }
           })));
         }
@@ -82,7 +83,22 @@ router.get('/rooms', auth, (req, res) => {
     { id: 'ml-ai', name: 'ML & AI', description: 'Machine learning, deep learning, AI', icon: '🤖', members: 88 },
     { id: 'projects', name: 'Show Your Work', description: 'Share and get feedback on your projects', icon: '🎨', members: 65 },
   ];
-  res.json(rooms);
+});
+
+// GET /chat/mentors - Get list of mentors (for students)
+router.get('/mentors', auth, async (req, res) => {
+  try {
+    if (supabase) {
+      const { data: mentors, error } = await supabase.from('users')
+        .select('id, name, email, skills, avatar')
+        .eq('role', 'mentor');
+      if (error) throw error;
+      return res.json(mentors || []);
+    }
+    res.json([{ id: 'demo-mentor-id', name: 'Demo Mentor', role: 'mentor' }]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

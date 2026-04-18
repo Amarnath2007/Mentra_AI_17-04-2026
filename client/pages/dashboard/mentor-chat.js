@@ -61,14 +61,14 @@ const Message = ({ msg, onTypingComplete, onUpdate }) => {
         {isAI ? <Bot size={15} className="text-white" /> : <User size={15} className="text-white" />}
       </div>
       <div className={`max-w-[80%] ${isAI ? '' : 'items-end'} flex flex-col gap-1`}>
-        <p className="text-xs mb-1 text-slate-500">{isAI ? 'Mentra AI Mentor' : 'You'}</p>
+        <p className="text-xs mb-1 text-slate-500 dark:text-slate-400">{isAI ? 'Mentra AI Mentor' : 'You'}</p>
         <div className={`rounded-2xl px-4 py-3 text-sm ${isAI ? 'msg-other shadow-sm' : 'msg-self'}`}>
           {isAI ? (
             msg.isTyping ? <Typewriter text={msg.content} onComplete={onTypingComplete} onUpdate={onUpdate} /> : <MarkdownContent content={msg.content} />
           ) : <p style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>}
         </div>
         {isAI && (
-          <button onClick={copy} className="flex items-center gap-1 text-xs transition-colors text-slate-400 hover:text-slate-600 px-1">
+          <button onClick={copy} className="flex items-center gap-1 text-xs transition-colors text-slate-400 hover:text-slate-600 dark:text-slate-300 px-1">
             {copied ? <Check size={11} style={{ color: '#4ade80' }} /> : <Copy size={11} />}
             {copied ? 'Copied' : 'Copy'}
           </button>
@@ -151,7 +151,7 @@ export default function MentorChat() {
               <p className="font-600 text-sm" style={{ fontWeight: 600 }}>Your AI Mentor</p>
               <div className="flex items-center gap-1.5">
                 <div className="dot-online w-1.5 h-1.5" />
-                <span className="text-xs text-slate-500">Session Active</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">Session Active</span>
               </div>
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function MentorChat() {
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Lightbulb size={13} style={{ color: '#f59e0b' }} />
-              <span className="text-xs text-slate-500">Quick actions</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">Quick actions</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {QUICK_PROMPTS.map(s => (
@@ -204,7 +204,7 @@ export default function MentorChat() {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
             placeholder="Ask your mentor anything..."
-            className="flex-1 resize-none outline-none bg-transparent text-sm leading-relaxed text-slate-800"
+            className="flex-1 resize-none outline-none bg-transparent text-sm leading-relaxed text-slate-800 dark:text-slate-100"
             style={{ fontFamily: 'DM Sans,sans-serif', maxHeight: 120, minHeight: 24 }}
             rows={1}
           />

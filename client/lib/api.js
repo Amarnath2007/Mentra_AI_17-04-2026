@@ -58,6 +58,14 @@ export const submitInsightAnswer = (data) => api.post('/ai/daily-insights/answer
 export const sendMessage = (data) => api.post('/chat/send', data);
 export const getChatHistory = (room, limit = 50) => api.get(`/chat/history/${room}?limit=${limit}`);
 export const getChatRooms = () => api.get('/chat/rooms');
+export const getMentors = () => api.get('/chat/mentors');
+
+// ─── Mentor ────────────────────────────────────────────────────────────────
+export const getMentorStats = () => api.get('/mentor/stats');
+export const getMentorStudents = () => api.get('/mentor/students');
+export const getMentorSessions = () => api.get('/mentor/sessions');
+export const getMentorTasks = () => api.get('/mentor/tasks');
+export const getMentorAnalytics = () => api.get('/mentor/analytics');
 
 // ─── Communities ────────────────────────────────────────────────────────────
 export const getCommunities = (search = '') => api.get(`/communities${search ? `?search=${encodeURIComponent(search)}` : ''}`);

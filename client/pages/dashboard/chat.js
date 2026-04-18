@@ -272,6 +272,36 @@ export default function CommunityChat() {
     selectCommunity(newCommunity);
   };
 
+  return (
+    <DashboardLayout title="Chat">
+      <div className="max-w-6xl mx-auto flex h-[calc(100vh-150px)] gap-4">
+
+        {/* Room sidebar */}
+        <div className="w-64 flex-shrink-0 glass rounded-2xl flex flex-col overflow-hidden">
+          <div className="p-4" style={{ borderBottom: '1px solid rgba(37,99,235,0.1)' }}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-600 text-sm flex items-center gap-2" style={{ fontWeight: 600 }}>
+                <MessageSquare size={15} style={{ color: '#2563eb' }} /> Rooms
+              </h3>
+              <div className={`flex items-center gap-1 text-xs ${connected ? 'text-green-400' : 'text-red-400'}`}>
+                {connected ? <Wifi size={11} /> : <WifiOff size={11} />}
+                <span>{connected ? 'Live' : 'Off'}</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-2 space-y-1">
+            {rooms.map(room => (
+              <button key={room.id} onClick={() => switchRoom(room)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all ${activeRoom?.id === room.id ? 'nav-active' : 'hover:bg-white/5 text-gray-400'}`}>
+                <span className="text-base flex-shrink-0">{room.icon || '#'}</span>
+                <div className="min-w-0">
+                  <p className="font-500 truncate text-slate-800 dark:text-slate-200" style={{ fontWeight: 500 }}>{room.name}</p>
+                  {room.members && <p className="text-xs text-slate-500 dark:text-slate-400">{room.members} members</p>}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
   if (loading || !user) return null;
 
   // ─── CHAT VIEW ─────────────────────────────────────────────────────────
@@ -290,6 +320,14 @@ export default function CommunityChat() {
                 {activeCommunity.icon || '💬'}
               </div>
               <div>
+                <p className="font-600 text-sm text-slate-800 dark:text-white" style={{ fontWeight: 600 }}>{activeRoom?.name || 'Select a room'}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{activeRoom?.description || ''}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+              <Users size={12} />
+              <span>{activeRoom?.members || 0}</span>
+            </div>
                 <p className="font-700 text-sm text-slate-800" style={{ fontWeight: 700 }}>{activeCommunity.name}</p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-400 flex items-center gap-1"><Users size={10} /> {activeCommunity.member_count}</span>
@@ -356,6 +394,22 @@ export default function CommunityChat() {
           </div>
 
           {/* Input */}
+          <div className="p-3" style={{ borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
+            <div className="flex gap-2 items-center">
+              <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <span className="text-sm text-slate-400"><Hash size={14} /></span>
+                <input value={input} onChange={handleTyping}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                  placeholder={`Message #${activeRoom?.name || 'general'}...`}
+                  className="flex-1 bg-transparent outline-none text-sm text-slate-800 dark:text-slate-100"
+                  style={{ fontFamily: 'DM Sans,sans-serif' }}
+                />
+              </div>
+              <button onClick={handleSend} disabled={!input.trim()}
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all"
+                style={{ background: input.trim() ? 'linear-gradient(135deg,#1d4ed8,#2563eb)' : 'rgba(37,99,235,0.15)', cursor: input.trim() ? 'pointer' : 'not-allowed' }}>
+                <Send size={15} className="text-white" />
+              </button>
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-3 flex gap-2 items-center">
             <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200">
               <Hash size={14} className="text-slate-400" />

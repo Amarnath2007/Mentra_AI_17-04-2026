@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const aiRoutes = require('./routes/ai');
 const chatRoutes = require('./routes/chat');
+const mentorRoutes = require('./routes/mentor');
 const communityRoutes = require('./routes/communities');
 const journeyRoutes = require('./routes/journey');
 const setupSocket = require('./socket');
@@ -43,6 +44,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/ai', aiRoutes);
 app.use('/chat', chatRoutes);
+app.use('/mentor', mentorRoutes);
 app.use('/communities', communityRoutes);
 app.use('/journey', journeyRoutes);
 

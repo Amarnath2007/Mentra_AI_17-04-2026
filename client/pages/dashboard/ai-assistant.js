@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../lib/auth';
 import DashboardLayout from '../../components/layout/DashboardLayout';
@@ -65,7 +65,7 @@ const Message = ({ msg, onTypingComplete }) => {
 
       {/* Bubble */}
       <div className={`max-w-[80%] ${isAI ? '' : 'items-end'} flex flex-col gap-1`}>
-        <p className="text-xs mb-1 text-slate-500">
+        <p className="text-xs mb-1 text-slate-500 dark:text-slate-400">
           {isAI ? 'Mentra AI' : 'You'}
         </p>
         <div className={`rounded-2xl px-4 py-3 text-sm ${isAI ? 'msg-other shadow-sm' : 'msg-self'}`}>
@@ -74,7 +74,7 @@ const Message = ({ msg, onTypingComplete }) => {
           ) : <p style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>}
         </div>
         {isAI && (
-          <button onClick={copy} className="flex items-center gap-1 text-xs transition-colors text-slate-400 hover:text-slate-600">
+          <button onClick={copy} className="flex items-center gap-1 text-xs transition-colors text-slate-400 hover:text-slate-600 dark:text-slate-300">
             {copied ? <Check size={11} style={{ color: '#4ade80' }} /> : <Copy size={11} />}
             {copied ? 'Copied' : 'Copy'}
           </button>
@@ -143,7 +143,7 @@ export default function AIAssistant() {
               <p className="font-600 text-sm" style={{ fontWeight: 600 }}>Mentra AI Assistant</p>
               <div className="flex items-center gap-1.5">
                 <div className="dot-online w-1.5 h-1.5" />
-                <span className="text-xs text-slate-500">Ready to help</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">Ready to help</span>
               </div>
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function AIAssistant() {
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Lightbulb size={13} style={{ color: '#f59e0b' }} />
-              <span className="text-xs text-slate-500">Try asking...</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">Try asking...</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {SUGGESTIONS.map(s => (
@@ -199,7 +199,7 @@ export default function AIAssistant() {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
             placeholder="Ask anything... (Enter to send, Shift+Enter for new line)"
-            className="flex-1 resize-none outline-none bg-transparent text-sm leading-relaxed text-slate-800"
+            className="flex-1 resize-none outline-none bg-transparent text-sm leading-relaxed text-slate-800 dark:text-slate-100"
             style={{ fontFamily: 'DM Sans,sans-serif', maxHeight: 120, minHeight: 24 }}
             rows={1}
           />
