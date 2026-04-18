@@ -5,14 +5,14 @@ import { useAuth } from '../../lib/auth';
 import {
   LayoutDashboard, MessageSquare, Bot, BookOpen, Brain,
   Trophy, Bell, LogOut, Menu, X, ChevronRight, Zap,
-  Users, Settings, Sparkles, Compass
+  Users, Settings, Sparkles, Compass, Map
 } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/dashboard/mentor-chat', label: 'AI Mentor', icon: Bot },
-  { href: '/dashboard/chat', label: 'Community Chat', icon: MessageSquare },
-  { href: '/dashboard/facts', label: 'Daily Fun Facts', icon: Sparkles },
+  { href: '/dashboard/journey', label: 'My Journey', icon: Map },
+  { href: '/dashboard/chat', label: 'Community', icon: Users },
   { href: '/dashboard/mentors', label: 'Find Mentors', icon: Users },
   { href: '/dashboard/courses', label: 'Explore Courses', icon: Compass },
 ];
