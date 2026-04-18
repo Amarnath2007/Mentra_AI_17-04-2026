@@ -45,22 +45,22 @@ const CreateModal = ({ onClose, onCreate }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-slide-up">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md p-6 animate-slide-up">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-700" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Start a Community</h3>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400"><X size={18} /></button>
+          <h3 className="text-lg font-700 dark:text-white" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Start a Community</h3>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400"><X size={18} /></button>
         </div>
 
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-600 text-slate-500 mb-1.5 uppercase tracking-wider">Name *</label>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Frontend Devs"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all bg-slate-50" />
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all bg-slate-50 dark:bg-slate-800 dark:text-white" />
           </div>
           <div>
             <label className="block text-xs font-600 text-slate-500 mb-1.5 uppercase tracking-wider">Description</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="What's this community about?"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none bg-slate-50" rows={2} />
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none bg-slate-50 dark:bg-slate-800 dark:text-white" rows={2} />
           </div>
           <div>
             <label className="block text-xs font-600 text-slate-500 mb-1.5 uppercase tracking-wider">Topic</label>
@@ -95,7 +95,7 @@ const CreateModal = ({ onClose, onCreate }) => {
 
 // ─── Community Card ─────────────────────────────────────────────────────────
 const CommunityCard = ({ community, isJoined, onJoin, onSelect }) => (
-  <div className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-lg hover:border-blue-200 transition-all group cursor-pointer"
+  <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900 transition-all group cursor-pointer"
     onClick={() => isJoined ? onSelect(community) : null}>
     <div className="flex items-start justify-between mb-3">
       <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-sm"
@@ -107,13 +107,13 @@ const CommunityCard = ({ community, isJoined, onJoin, onSelect }) => (
         {community.topic || 'General'}
       </span>
     </div>
-    <h4 className="text-sm font-700 text-slate-800 mb-1 group-hover:text-blue-600 transition-colors" style={{ fontWeight: 700 }}>{community.name}</h4>
-    <p className="text-xs text-slate-500 mb-3 line-clamp-2 leading-relaxed">{community.description || 'No description yet.'}</p>
+    <h4 className="text-sm font-700 text-slate-800 dark:text-slate-200 mb-1 group-hover:text-blue-600 transition-colors" style={{ fontWeight: 700 }}>{community.name}</h4>
+    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2 leading-relaxed">{community.description || 'No description yet.'}</p>
     <div className="flex items-center justify-between">
       <span className="text-xs text-slate-400 flex items-center gap-1"><Users size={12} /> {community.member_count || 0} members</span>
       {isJoined ? (
         <button onClick={(e) => { e.stopPropagation(); onSelect(community); }}
-          className="text-xs font-600 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 transition-all flex items-center gap-1">
+          className="text-xs font-600 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30 hover:bg-blue-100 transition-all flex items-center gap-1">
           Open <ChevronRight size={12} />
         </button>
       ) : (
@@ -272,36 +272,6 @@ export default function CommunityChat() {
     selectCommunity(newCommunity);
   };
 
-  return (
-    <DashboardLayout title="Chat">
-      <div className="max-w-6xl mx-auto flex h-[calc(100vh-150px)] gap-4">
-
-        {/* Room sidebar */}
-        <div className="w-64 flex-shrink-0 glass rounded-2xl flex flex-col overflow-hidden">
-          <div className="p-4" style={{ borderBottom: '1px solid rgba(37,99,235,0.1)' }}>
-            <div className="flex items-center justify-between">
-              <h3 className="font-600 text-sm flex items-center gap-2" style={{ fontWeight: 600 }}>
-                <MessageSquare size={15} style={{ color: '#2563eb' }} /> Rooms
-              </h3>
-              <div className={`flex items-center gap-1 text-xs ${connected ? 'text-green-400' : 'text-red-400'}`}>
-                {connected ? <Wifi size={11} /> : <WifiOff size={11} />}
-                <span>{connected ? 'Live' : 'Off'}</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto p-2 space-y-1">
-            {rooms.map(room => (
-              <button key={room.id} onClick={() => switchRoom(room)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all ${activeRoom?.id === room.id ? 'nav-active' : 'hover:bg-white/5 text-gray-400'}`}>
-                <span className="text-base flex-shrink-0">{room.icon || '#'}</span>
-                <div className="min-w-0">
-                  <p className="font-500 truncate text-slate-800 dark:text-slate-200" style={{ fontWeight: 500 }}>{room.name}</p>
-                  {room.members && <p className="text-xs text-slate-500 dark:text-slate-400">{room.members} members</p>}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
   if (loading || !user) return null;
 
   // ─── CHAT VIEW ─────────────────────────────────────────────────────────
@@ -310,9 +280,9 @@ export default function CommunityChat() {
       <DashboardLayout title="Community Chat">
         <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-140px)] animate-fade-in">
           {/* Chat Header */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-3 flex items-center justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 mb-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <button onClick={handleBack} className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 transition-all">
+              <button onClick={handleBack} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-all">
                 <ChevronRight size={18} className="rotate-180" />
               </button>
               <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
@@ -320,15 +290,7 @@ export default function CommunityChat() {
                 {activeCommunity.icon || '💬'}
               </div>
               <div>
-                <p className="font-600 text-sm text-slate-800 dark:text-white" style={{ fontWeight: 600 }}>{activeRoom?.name || 'Select a room'}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{activeRoom?.description || ''}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <Users size={12} />
-              <span>{activeRoom?.members || 0}</span>
-            </div>
-                <p className="font-700 text-sm text-slate-800" style={{ fontWeight: 700 }}>{activeCommunity.name}</p>
+                <p className="font-700 text-sm text-slate-800 dark:text-white" style={{ fontWeight: 700 }}>{activeCommunity.name}</p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-400 flex items-center gap-1"><Users size={10} /> {activeCommunity.member_count}</span>
                   <div className={`flex items-center gap-1 text-xs ${connected ? 'text-green-500' : 'text-red-400'}`}>
@@ -339,13 +301,13 @@ export default function CommunityChat() {
               </div>
             </div>
             <button onClick={handleLeave}
-              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg text-red-500 hover:bg-red-50 border border-red-100 transition-all font-500">
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-100 dark:border-red-900/30 transition-all font-500">
               <LogOut size={12} /> Leave
             </button>
           </div>
 
           {/* Messages Area */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto bg-white rounded-2xl border border-slate-100 shadow-sm p-4 space-y-3 mb-3">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-3 mb-3">
             {loadingMsgs ? (
               <div className="flex items-center justify-center h-full">
                 <div className="flex gap-2 items-center text-sm text-slate-400">
@@ -356,7 +318,7 @@ export default function CommunityChat() {
             ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-12">
                 <div className="text-5xl mb-4">{activeCommunity.icon || '💬'}</div>
-                <p className="text-sm font-600 text-slate-600 mb-1" style={{ fontWeight: 600 }}>No messages yet</p>
+                <p className="text-sm font-600 text-slate-600 dark:text-slate-300 mb-1" style={{ fontWeight: 600 }}>No messages yet</p>
                 <p className="text-xs text-slate-400">Be the first to say something! 🚀</p>
               </div>
             ) : messages.map((msg, i) => {
@@ -394,29 +356,13 @@ export default function CommunityChat() {
           </div>
 
           {/* Input */}
-          <div className="p-3" style={{ borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
-            <div className="flex gap-2 items-center">
-              <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                <span className="text-sm text-slate-400"><Hash size={14} /></span>
-                <input value={input} onChange={handleTyping}
-                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                  placeholder={`Message #${activeRoom?.name || 'general'}...`}
-                  className="flex-1 bg-transparent outline-none text-sm text-slate-800 dark:text-slate-100"
-                  style={{ fontFamily: 'DM Sans,sans-serif' }}
-                />
-              </div>
-              <button onClick={handleSend} disabled={!input.trim()}
-                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all"
-                style={{ background: input.trim() ? 'linear-gradient(135deg,#1d4ed8,#2563eb)' : 'rgba(37,99,235,0.15)', cursor: input.trim() ? 'pointer' : 'not-allowed' }}>
-                <Send size={15} className="text-white" />
-              </button>
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-3 flex gap-2 items-center">
-            <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-3 flex gap-2 items-center">
+            <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
               <Hash size={14} className="text-slate-400" />
               <input value={input} onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                 placeholder={`Message #${activeCommunity.name}...`}
-                className="flex-1 bg-transparent outline-none text-sm text-slate-800" style={{ fontFamily: 'DM Sans,sans-serif' }} />
+                className="flex-1 bg-transparent outline-none text-sm text-slate-800 dark:text-slate-100" style={{ fontFamily: 'DM Sans,sans-serif' }} />
             </div>
             <button onClick={handleSend} disabled={!input.trim()}
               className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all shadow-sm"
@@ -440,8 +386,8 @@ export default function CommunityChat() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-700" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Communities</h2>
-            <p className="text-sm text-slate-500 mt-1">Join communities, learn together, and chat in real-time.</p>
+            <h2 className="text-2xl font-700 dark:text-white" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>Communities</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Join communities, learn together, and chat in real-time.</p>
           </div>
           <button onClick={() => setShowCreate(true)}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-600 text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl"
@@ -455,7 +401,7 @@ export default function CommunityChat() {
           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Search communities by name or topic..."
-            className="w-full pl-11 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all shadow-sm" />
+            className="w-full pl-11 pr-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all shadow-sm dark:text-white" />
         </div>
 
         {loadingList ? (
@@ -467,10 +413,10 @@ export default function CommunityChat() {
           </div>
         ) : communities.length === 0 && !search ? (
           /* Empty state */
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-16 text-center">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-16 text-center">
             <div className="text-6xl mb-4">👀</div>
-            <h3 className="text-xl font-700 text-slate-800 mb-2" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>No communities yet</h3>
-            <p className="text-sm text-slate-500 mb-6">Be the first to start one 🚀</p>
+            <h3 className="text-xl font-700 text-slate-800 dark:text-white mb-2" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>No communities yet</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Be the first to start one 🚀</p>
             <button onClick={() => setShowCreate(true)}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-600 text-white shadow-lg"
               style={{ background: 'linear-gradient(135deg,#1d4ed8,#2563eb)' }}>
@@ -482,7 +428,7 @@ export default function CommunityChat() {
             {/* My Communities */}
             {joinedCommunities.length > 0 && (
               <div>
-                <h3 className="text-sm font-700 text-slate-600 mb-3 flex items-center gap-2 uppercase tracking-wider" style={{ fontWeight: 700 }}>
+                <h3 className="text-sm font-700 text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-2 uppercase tracking-wider" style={{ fontWeight: 700 }}>
                   <Crown size={14} className="text-amber-500" /> My Communities
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -496,7 +442,7 @@ export default function CommunityChat() {
             {/* Discover */}
             {discoverCommunities.length > 0 && (
               <div>
-                <h3 className="text-sm font-700 text-slate-600 mb-3 flex items-center gap-2 uppercase tracking-wider" style={{ fontWeight: 700 }}>
+                <h3 className="text-sm font-700 text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-2 uppercase tracking-wider" style={{ fontWeight: 700 }}>
                   <Rocket size={14} className="text-blue-500" /> Discover
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -509,8 +455,8 @@ export default function CommunityChat() {
 
             {/* Search with no results */}
             {search && communities.length === 0 && (
-              <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
-                <p className="text-sm text-slate-500">No communities match "<strong>{search}</strong>"</p>
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-12 text-center">
+                <p className="text-sm text-slate-500 dark:text-slate-400">No communities match "<strong>{search}</strong>"</p>
                 <button onClick={() => setShowCreate(true)}
                   className="mt-4 text-xs font-600 text-blue-600 hover:underline">
                   Create "{search}" community?
